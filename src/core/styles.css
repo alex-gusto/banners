@@ -1,0 +1,54 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+}
+
+#app {
+  position: relative;
+}
+
+[data-container] {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mock-container {
+  background-image: url(http://studio3.inskinmedia.com/images/previewDefault.jpg);
+  background-size: cover;
+  background-position: top center;
+  height: 2000px;
+}
+
+.frames-holder {
+  position: absolute;
+  inset: 0;
+}
+
+.site {
+  padding-top: 250px;
+  padding-bottom: 100px;
+}
+
+.frame-top {
+  height: 250px;
+}
+
+.frame-bottom {
+  height: 100px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.frame-sides {
+  display: flex;
+  position: absolute;
+  inset: 0;
+}
+
+.frame-side {
+  flex: 1;
+}
