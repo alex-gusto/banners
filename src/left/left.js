@@ -1,6 +1,6 @@
 
 function receiveScrollData(data){
-    console.log(data);
+    console.log('left');
 }
 
 function animate (){

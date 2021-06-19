@@ -40,6 +40,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: "index.html",
       template: "./index.html",
+      excludeAssets: [/bottom/],
       chunks: ["main"],
     }),
     ...frames.map(createHtmlForFrame).flat(),
@@ -60,7 +61,12 @@ module.exports = {
               "sha512-DkPsH9LzNzZaZjCszwKrooKwgjArJDiEjA5tTgr3YX4E6TYv93ICS8T41yFHJnnSmGpnf0Mvb5NhScYbwvhn2w==",
             crossorigin: "anonymous",
           },
-        }
+        },
+        {
+          append: false,
+          path: "https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TimelineMax.min.js",
+          publicPath: "",
+        },
       ],
     }),
     new CopyPlugin({
@@ -68,7 +74,12 @@ module.exports = {
         "./src/global/global.js",
         "./src/global/global.css",
 
-        ...frames.map(name => [`./src/${name}/${name}.js`,`./src/${name}/${name}.css`]).flat()
+        ...frames
+          .map((name) => [
+            `./src/${name}/${name}.js`,
+            `./src/${name}/${name}.css`,
+          ])
+          .flat(),
       ],
     }),
   ],

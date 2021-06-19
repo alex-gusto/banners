@@ -1,5 +1,5 @@
 function receiveScrollData(data){
-    console.log(data);
+    console.log('top');
 }
 
 function animate (){

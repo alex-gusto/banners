@@ -27,9 +27,23 @@ const frames = [
   },
 ];
 
-const createFrame = (src) => {
+const symbolISM = Symbol("symbolISM");
+const ISM = {
+  shared: {
+    [symbolISM]: {},
+    set(key, value) {
+      this[symbolISM][key] = value;
+    },
+    get(key) {
+      return this[symbolISM][key];
+    },
+  },
+};
+
+const createFrame = (src, id) => {
   return createEl("iframe", {
     src,
+    name: id,
     frameborder: "0",
     allowfullscreen: "true",
     webkitallowfullscreen: "true",
@@ -53,8 +67,11 @@ const initApp = async () => {
   const frameEls = frames.map(({ id, src }) => {
     return new Promise((resolve) => {
       const holder = document.getElementById(id);
-      const frame = createFrame(src);
-      frame.onload = () => resolve(frame.contentWindow);
+      const frame = createFrame(src, id);
+      frame.onload = function() {
+        this.contentWindow.ISM = ISM
+        resolve(this.contentWindow);
+      }
 
       holder.appendChild(frame);
     });
@@ -68,7 +85,7 @@ const initApp = async () => {
 
       win.receiveScrollData({
         scroll: $(document).scrollTop(),
-        body: $(document.body).height()
+        body: $(document.body).height(),
       });
     });
   });
