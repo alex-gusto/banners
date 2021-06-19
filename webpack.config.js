@@ -13,7 +13,9 @@ const createHtmlForFrame = (name) => {
       chunks: [],
     }),
     new HtmlWebpackTagsPlugin({
-      tags: ["global.js", `${name}.js`],
+      files: [`${name}.html`],
+      links:["global.css", `${name}.css`],
+      scripts: ["global.js", `${name}.js`],
     }),
   ];
 };
@@ -40,33 +42,23 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: "index.html",
       template: "./index.html",
-      excludeAssets: [/bottom/],
       chunks: ["main"],
     }),
     ...frames.map(createHtmlForFrame).flat(),
     new HtmlWebpackTagsPlugin({
+      publicPath: false,
+      append: false,
       tags: [
-        {
-          append: false,
-          external: { packageName: "jquery", variableName: "jQuery" },
-          publicPath: "",
-          path: "https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js",
-        },
-        {
-          append: false,
-          path: "https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js",
-          publicPath: "",
-          attributes: {
-            integrity:
-              "sha512-DkPsH9LzNzZaZjCszwKrooKwgjArJDiEjA5tTgr3YX4E6TYv93ICS8T41yFHJnnSmGpnf0Mvb5NhScYbwvhn2w==",
-            crossorigin: "anonymous",
-          },
-        },
-        {
-          append: false,
-          path: "https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TimelineMax.min.js",
-          publicPath: "",
-        },
+        "https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js",
+      ],
+    }),
+    new HtmlWebpackTagsPlugin({
+      publicPath: false,
+      append: false,
+      files: frames.map((name) => `${name}.html`),
+      tags: [
+        "https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TimelineMax.min.js",
       ],
     }),
     new CopyPlugin({
@@ -83,14 +75,6 @@ module.exports = {
       ],
     }),
   ],
-  externals: {
-    jquery: "jQuery",
-  },
-  optimization: {
-    splitChunks: {
-      chunks: "all",
-    },
-  },
   devServer: {
     contentBase: ["dist"],
     publicPath: "/",

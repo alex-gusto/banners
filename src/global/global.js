@@ -7,9 +7,7 @@ $(window).load(function(e){
 
 function checkReady(){
 	if (bInitCalled && bPageLoaded) {	
-		if (window.self === window.top){ 
-			doStart();
-		}
+		doStart();
 	}
 }
 
