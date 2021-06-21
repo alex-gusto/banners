@@ -78,6 +78,5 @@ module.exports = {
   devServer: {
     contentBase: ["dist"],
     publicPath: "/",
-    port: 3001,
   },
 };

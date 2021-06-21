@@ -1,7 +1,7 @@
 function receiveScrollData(data) {
   ISM.shared.get("topHeight");
 
-  const y = data.scroll - 900;
+  const y = data.scroll;
   if (y > 0) {
     TweenMax.to("[data-scroll]", 0.7, { y });
   }
