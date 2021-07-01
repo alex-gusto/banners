@@ -9,7 +9,7 @@ const createHtmlForFrame = (name) => {
   return [
     new HtmlWebpackPlugin({
       filename: `${name}.html`,
-      template: `./src/${name}/index.html`,
+      template: `./src/${name}/${name}.html`,
       chunks: [],
     }),
     new HtmlWebpackTagsPlugin({
@@ -76,7 +76,7 @@ module.exports = {
     }),
   ],
   devServer: {
-    contentBase: ["dist"],
+    contentBase: ["dist", 'public'],
     publicPath: "/",
   },
 };
