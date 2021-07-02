@@ -72,11 +72,15 @@ module.exports = {
             `./src/${name}/${name}.css`,
           ])
           .flat(),
+       {
+         from:  "./src/assets/",
+         to: 'assets'
+       }   
       ],
     }),
   ],
   devServer: {
-    contentBase: ["dist", 'public'],
+    contentBase: ["dist"],
     publicPath: "/",
   },
 };
