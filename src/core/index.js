@@ -6,7 +6,7 @@ const RIGHT_FRAME_ID = "frame-right";
 const TOP_FRAME_ID = "frame-top";
 const BOTTOM_FRAME_ID = "frame-bottom";
 
-const CONTAINER_WIDTH = 1200;
+const CONTAINER_WIDTH = 960;
 
 const frames = [
   {
