@@ -1,6 +1,5 @@
 node_modules/
 dist/
-src/bottom/
-src/top/
-src/left/
-src/right/
+projects/**/*
+!*/.gitkeep
+.env

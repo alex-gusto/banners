@@ -1,31 +1,11 @@
-import "./styles.css";
-import createEl from "./utils/create-element";
+import "./core/styles.css";
+import createEl from "./core/utils/create-element";
+import { FRAMES, CONTAINER_WIDTH } from "./core/constants";
 
-const LEFT_FRAME_ID = "frame-left";
-const RIGHT_FRAME_ID = "frame-right";
-const TOP_FRAME_ID = "frame-top";
-const BOTTOM_FRAME_ID = "frame-bottom";
-
-const CONTAINER_WIDTH = 960;
-
-const frames = [
-  {
-    id: LEFT_FRAME_ID,
-    src: "/left.html",
-  },
-  {
-    id: RIGHT_FRAME_ID,
-    src: "/right.html",
-  },
-  {
-    id: TOP_FRAME_ID,
-    src: "/top.html",
-  },
-  {
-    id: BOTTOM_FRAME_ID,
-    src: "/bottom.html",
-  },
-];
+const frames = FRAMES.map((frame) => ({
+  id: frame,
+  src: `/${frame}.html`,
+}));
 
 const symbolISM = Symbol("symbolISM");
 const ISM = {
@@ -68,10 +48,10 @@ const initApp = async () => {
     return new Promise((resolve) => {
       const holder = document.getElementById(id);
       const frame = createFrame(src, id);
-      frame.onload = function() {
-        this.contentWindow.ISM = ISM
+      frame.onload = function () {
+        this.contentWindow.ISM = ISM;
         resolve(this.contentWindow);
-      }
+      };
 
       holder.appendChild(frame);
     });

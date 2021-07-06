@@ -1,12 +1,13 @@
 {
   "name": "builder",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "script.js",
   "scripts": {
     "deploy": "node deploy/index.mjs",
+    "serve":"webpack serve --open",
     "dev": "webpack --config webpack.config.js",
-    "start": "webpack serve --open",
+    "start": "node ./init-project.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

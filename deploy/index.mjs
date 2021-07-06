@@ -1,21 +1,33 @@
-import { remote } from 'webdriverio'
+import { remote } from "webdriverio";
 
-let browser
+let browser;
+(async () => {
+  browser = await remote({
+    capabilities: { browserName: "chrome" },
+  });
 
-;(async () => {
-    browser = await remote({
-        capabilities: { browserName: 'chrome' }
-    })
+  await browser.navigateTo("");
 
-    await browser.navigateTo('https://www.google.com/ncr')
+  const userNameInput = await browser.$("[ng-model=username]");
+  await userNameInput.setValue(STUDIO_USERNAME);
 
-    const searchInput = await browser.$('input')
-    await searchInput.setValue('WebdriverIO')
+  const passwordInput = await browser.$("[ng-model=password]");
+  await passwordInput.setValue(STUDIO_PASSWORD);
 
-    console.log(await browser.getTitle()) // outputs "WebdriverIO - Google Search"
+  const submitButton = await browser.$("button.btn-primary");
+  await submitButton.click();
 
-    await browser.deleteSession()
+//   const link = await browser.$('[ng-click="selectCampaign(campaign)"]');
+//   await link.click();
+
+  await browser.navigateTo(
+    "http://studio3.inskinmedia.com/#/build/60debff2606883720a514cb5/code"
+  );
+
+  console.log(await browser.getTitle()); // outputs "WebdriverIO - Google Search"
+
+  // await browser.deleteSession()
 })().catch((err) => {
-    console.error(err)
-    return browser.deleteSession()
-})
+  console.error(err);
+  return browser.deleteSession();
+});
