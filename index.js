@@ -1,6 +1,6 @@
 import "./core/styles.css";
 import createEl from "./core/utils/create-element";
-import { FRAMES, CONTAINER_WIDTH } from "./core/constants";
+import { FRAMES, CONTAINER_WIDTH, SCROLL_HEIGHT } from "./core/constants";
 
 const frames = FRAMES.map((frame) => ({
   id: frame,
@@ -33,16 +33,14 @@ const createFrame = (src, id) => {
   });
 };
 
-const getContainerWidth = () => {
-  let params = new URL(document.location).searchParams;
-  return params.get("width") || CONTAINER_WIDTH;
-};
-
 const initApp = async () => {
+  const params = new URL(document.location).searchParams;
+
+  const mockContainer = document.querySelector('.mock-container')
+  mockContainer.style.height = `${params.get('height') || SCROLL_HEIGHT}px`
+
   const containers = document.querySelectorAll("[data-container]");
-  containers.forEach((el) => {
-    el.style.maxWidth = `${getContainerWidth()}px`;
-  });
+  containers.forEach(el => el.style.maxWidth = `${params.get("width") || CONTAINER_WIDTH}px`);
 
   const frameEls = frames.map(({ id, src }) => {
     return new Promise((resolve) => {
