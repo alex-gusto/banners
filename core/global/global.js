@@ -1,6 +1,7 @@
 var bInitCalled = false, bPageLoaded = false, tl = null;
 
 var TOP_HEIGHT = 250;
+var BOTTOM_HEIGHT = 100;
 
 $(window).load(function(e){
 	bPageLoaded = true;
