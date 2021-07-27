@@ -61,9 +61,12 @@ const initApp = async () => {
     frameWins.forEach((win) => {
       if (typeof win.receiveScrollData !== "function") return;
 
+     $('.scroll').text(Math.round($(document).scrollTop()))
+
       win.receiveScrollData({
         scroll: $(document).scrollTop(),
         body: $(document.body).height(),
+        window: $(window).height()
       });
     });
   });
