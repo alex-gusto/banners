@@ -57,19 +57,17 @@ const initApp = async () => {
 
   const frameWins = await Promise.all(frameEls);
 
-  $(window).on("scroll", function () {
+  window.addEventListener('scroll', () => {
     frameWins.forEach((win) => {
       if (typeof win.receiveScrollData !== "function") return;
 
-     $('.scroll').text(Math.round($(document).scrollTop()))
-
       win.receiveScrollData({
-        scroll: $(document).scrollTop(),
-        body: $(document.body).height(),
-        window: $(window).height()
+        scroll: window.pageYOffset,
+        body: document.body.scrollHeight,
+        window: window.innerHeight
       });
     });
-  });
+  })
 };
 
 initApp();

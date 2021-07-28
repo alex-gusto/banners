@@ -1,5 +1,5 @@
 function receiveScrollData(data) {
-  var finalScrollPoint = data.body - data.window;
+  var finalScrollPoint = data.body - data.window - BOTTOM_HEIGHT;
 
   // first scene on top
   if (data.scroll < TOP_HEIGHT) {

@@ -13,12 +13,7 @@ module.exports = (env) => {
         filename: `${name}.html`,
         template: `./${rootDir}/${name}/${name}.html`,
         chunks: [],
-      }),
-      new HtmlWebpackTagsPlugin({
-        files: [`${name}.html`],
-        links: ["global.css", `${name}.css`],
-        scripts: ["global.js", `${name}.js`],
-      }),
+      })
     ];
   };
 
@@ -47,29 +42,19 @@ module.exports = (env) => {
         chunks: ["main"],
       }),
       ...FRAMES.map(createHtmlForFrame).flat(),
-      new HtmlWebpackTagsPlugin({
-        publicPath: false,
-        append: false,
-        tags: [
-          "https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js",
-        ],
-      }),
-      new HtmlWebpackTagsPlugin({
-        publicPath: false,
-        append: false,
-        files: FRAMES.map((name) => `${name}.html`),
-        tags: [
-          "https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js",
-          "https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TimelineMax.min.js",
-        ],
-      }),
       new CopyPlugin({
         patterns: [
-          `./${rootDir}/global/global.js`,
+          {
+            from: `./${rootDir}/global/global.js`,
+            to: "js",
+          },
           `./${rootDir}/global/global.css`,
 
           ...FRAMES.map((name) => [
-            `./${rootDir}/${name}/${name}.js`,
+            {
+              from: `./${rootDir}/${name}/${name}.js`,
+              to: "js",
+            },
             `./${rootDir}/${name}/${name}.css`,
           ]).flat(),
           {
@@ -81,7 +66,7 @@ module.exports = (env) => {
       }),
     ],
     devServer: {
-      contentBase: ["dist"],
+      contentBase: ["dist", "public"],
       publicPath: "/",
     },
   };
