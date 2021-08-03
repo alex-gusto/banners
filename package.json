@@ -6,7 +6,7 @@
   "scripts": {
     "deploy": "node deploy/index.mjs",
     "serve": "webpack serve --open",
-    "dev": "webpack --config webpack.config.js",
+    "dev": "webpack --config webpack.config.js --env name=test",
     "start": "node ./init-project.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
