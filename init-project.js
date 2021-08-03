@@ -42,18 +42,17 @@ function createProjectFolderStructure(projectPath) {
     fs.mkdirSync(framePath);
 
     templates.forEach((file) => {
-      const match = file.match(/([a-z]+)\.([a-z]+$)/);
+      const match = file.match(/([a-z]+)\./);
       if (!match) return;
-      const [, name, ext] = match;
+      const [, name] = match;
 
-      if (name !== frame && ext == "js") {
+      if (name !== frame) {
         return;
       }
-
-      let fileName = `${frame}.${ext}`;
+      
       fs.copyFileSync(
         path.resolve(templatesPath, file),
-        `${framePath}/${fileName}`
+        `${framePath}/${file}`
       );
     });
   });
