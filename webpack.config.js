@@ -1,5 +1,4 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-var HtmlWebpackTagsPlugin = require("html-webpack-tags-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const path = require("path");
 const { FRAMES, PROJECTS_FOLDER } = require("./core/constants");
