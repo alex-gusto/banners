@@ -47,8 +47,15 @@ html {
 
 .frame-sides {
   display: flex;
-  position: absolute;
   inset: 0;
+}
+
+.frame-sides--absolute {
+  position: absolute;
+}
+
+.frame-sides--fixed {
+  position: fixed;
 }
 
 .frame-side {

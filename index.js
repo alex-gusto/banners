@@ -33,14 +33,30 @@ const createFrame = (src, id) => {
   });
 };
 
-const initApp = async () => {
-  const params = new URL(document.location).searchParams;
+const getParams = () => new URL(document.location).searchParams;
 
-  const mockContainer = document.querySelector('.mock-container')
-  mockContainer.style.height = `${params.get('height') || SCROLL_HEIGHT}px`
+const setupContainers = () => {
+  const params = getParams();
+  const mockContainer = document.querySelector(".mock-container");
+  mockContainer.style.height = `${params.get("height") || SCROLL_HEIGHT}px`;
 
   const containers = document.querySelectorAll("[data-container]");
-  containers.forEach(el => el.style.maxWidth = `${params.get("width") || CONTAINER_WIDTH}px`);
+  containers.forEach(
+    (el) => (el.style.maxWidth = `${params.get("width") || CONTAINER_WIDTH}px`)
+  );
+};
+
+const setupSides = () => {
+  const params = getParams();
+  const sides = document.querySelector("[data-sides]");
+  sides.classList.add(
+    params.has("fixed") ? "frame-sides--fixed" : "frame-sides--absolute"
+  );
+};
+
+const initApp = async () => {
+  setupContainers();
+  setupSides();
 
   const frameEls = frames.map(({ id, src }) => {
     return new Promise((resolve) => {
@@ -57,17 +73,17 @@ const initApp = async () => {
 
   const frameWins = await Promise.all(frameEls);
 
-  window.addEventListener('scroll', () => {
+  window.addEventListener("scroll", () => {
     frameWins.forEach((win) => {
       if (typeof win.receiveScrollData !== "function") return;
 
       win.receiveScrollData({
         scroll: window.pageYOffset,
         body: document.body.scrollHeight,
-        window: window.innerHeight
+        window: window.innerHeight,
       });
     });
-  })
+  });
 };
 
 initApp();
