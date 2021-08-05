@@ -1,50 +1,3 @@
-/*
-```js
-
-var slider = Slider();
-
-function receiveScrollData(data) {
-  var progress = data.scroll / (data.body - data.window);
-  slider.play(progress);
-}
-
-function animate() {
-  slider.init(".slider-slide");
-}
-
-```html
-
-<div class="slider">
- <div class="slider-holder">
-    <div class="slider-slide"></div>
-    <div class="slider-slide"></div>
-    <div class="slider-slide"></div>
-    <div class="slider-slide"></div>
-    <div class="slider-slide"></div>
-    <div class="slider-slide"></div>
- </div>
-</div>
-
-```css
-.slider {
-  width: 100%;
-  height: 300px;
-}
-
-.slider-holder {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.slider-slide {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-*/
-
 var deepCopy = function (obj) {
   try {
     return JSON.parse(JSON.stringify(obj));
@@ -55,14 +8,14 @@ var deepCopy = function (obj) {
 
 var Slider = function (options) {
   var DEFAULT_OPTIONS = {
-    onBeforeEnter: function (el) {
+    onAppear: function (el) {
       TweenMax.set(el, { opacity: 0 });
+    },
+    onDisappear: function (el) {
+      TweenMax.set(el, { opacity: 1 });
     },
     onEnter: function (el, onComplete) {
       TweenMax.to(el, 1, { opacity: 1, onComplete });
-    },
-    onBeforeLeave: function (el) {
-      TweenMax.set(el, { opacity: 1 });
     },
     onLeave: function (el, onComplete) {
       TweenMax.to(el, 1, { opacity: 0, onComplete });
@@ -136,26 +89,9 @@ var Slider = function (options) {
     _options.onEnter(slideEl, done, meta);
   }
 
-  function _initSlides() {
-    let prevIndex = null;
-    _slides.forEach(function (slide, i) {
-      var meta = {
-        prevIndex,
-        currentIndex: i,
-      };
-
-      if (_currentSlideIndex === i) {
-        _options.onBeforeLeave(slide, meta);
-      } else {
-        _options.onBeforeEnter(slide, meta);
-      }
-
-      prevIndex = i;
-    });
-  }
-
   function play(progress) {
-    const nextSlideIndex = Math.floor(progress / _progressStep);
+    var nextSlideIndex = Math.floor(progress / _progressStep);
+    var speed = Math.abs(progress - _progress) * Math.PI;
 
     _direction = _progress > progress ? -1 : 1;
     _progress = progress;
@@ -166,10 +102,13 @@ var Slider = function (options) {
     _hideSlide(_currentSlideIndex, {
       prevIndex: _currentSlideIndex,
       currentIndex: nextSlideIndex,
+      speed: speed,
     });
+
     _showSlide(nextSlideIndex, {
       prevIndex: _currentSlideIndex,
       currentIndex: nextSlideIndex,
+      speed: speed,
     });
 
     _currentSlideIndex = nextSlideIndex;
@@ -179,7 +118,7 @@ var Slider = function (options) {
     return _getSlideEl(index);
   }
 
-  function getCurrentSlideIndex() {
+  function current() {
     return _currentSlideIndex;
   }
 
@@ -198,7 +137,21 @@ var Slider = function (options) {
       throw new Error("No slides found! Check: " + selectorOrSlides);
     }
 
-    _initSlides();
+    let prevIndex = null;
+    _slides.forEach(function (slide, i) {
+      var meta = {
+        prevIndex,
+        currentIndex: i,
+      };
+
+      if (_currentSlideIndex === i) {
+        _options.onDisappear(slide, meta);
+      } else {
+        _options.onAppear(slide, meta);
+      }
+
+      prevIndex = i;
+    });
 
     _states.isInit = true;
   }
@@ -208,6 +161,7 @@ var Slider = function (options) {
     play: play,
     getSlideEl: getSlideEl,
     direction: direction,
-    getCurrentSlideIndex: getCurrentSlideIndex,
+    current: current,
   };
 };
+

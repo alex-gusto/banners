@@ -1,24 +1,27 @@
 ```javascript
 var slider = Slider({
-  onBeforeEnter: function (el, meta) {
+  onAppear: function (el, meta) {
     var prevIndex = meta.prevIndex;
     var currentIndex = meta.currentIndex;
     var dir = currentIndex < prevIndex ? 1 : -1;
 
     TweenMax.set(el, { x: dir * 100 + "%" });
   },
-  onEnter: function (el, onComplete) {
-    TweenMax.to(el, 1, { x: "0%", onComplete });
-  },
-  onBeforeLeave: function (el) {
+  onDisappear: function (el) {
     TweenMax.set(el, { x: "0%" });
+  },
+
+  onEnter: function (el, onComplete, meta) {
+    var timeScale = 1 + meta.speed;
+    TweenMax.to(el, 1, { x: "0%", onComplete }).timeScale(timeScale);
   },
   onLeave: function (el, onComplete, meta) {
     var prevIndex = meta.prevIndex;
     var currentIndex = meta.currentIndex;
     var dir = currentIndex > prevIndex ? 1 : -1;
+    var timeScale = 1 + meta.speed;
 
-    TweenMax.to(el, 1, { x: dir * 100 + "%", onComplete });
+    TweenMax.to(el, 1, { x: dir * 100 + "%", onComplete }).timeScale(timeScale);
   },
 });
 
