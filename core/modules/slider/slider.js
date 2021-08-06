@@ -140,7 +140,7 @@ var Slider = function (options) {
     let prevIndex = null;
     _slides.forEach(function (slide, i) {
       var meta = {
-        prevIndex,
+        prevIndex: prevIndex,
         currentIndex: i,
       };
 
