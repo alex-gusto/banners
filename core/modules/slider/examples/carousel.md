@@ -11,17 +11,17 @@ var slider = Slider({
     TweenMax.set(el, { x: "0%" });
   },
 
-  onEnter: function (el, onComplete, meta) {
+  onEnter: function (el, done, meta) {
     var timeScale = 1 + meta.speed;
-    TweenMax.to(el, 1, { x: "0%", onComplete }).timeScale(timeScale);
+    TweenMax.to(el, 1, { x: "0%", onComplete: done }).timeScale(timeScale);
   },
-  onLeave: function (el, onComplete, meta) {
+  onLeave: function (el, done, meta) {
     var prevIndex = meta.prevIndex;
     var currentIndex = meta.currentIndex;
     var dir = currentIndex > prevIndex ? 1 : -1;
     var timeScale = 1 + meta.speed;
 
-    TweenMax.to(el, 1, { x: dir * 100 + "%", onComplete }).timeScale(timeScale);
+    TweenMax.to(el, 1, { x: dir * 100 + "%", onComplete: done }).timeScale(timeScale);
   },
 });
 

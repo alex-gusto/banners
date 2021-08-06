@@ -14,11 +14,11 @@ var Slider = function (options) {
     onDisappear: function (el) {
       TweenMax.set(el, { opacity: 1 });
     },
-    onEnter: function (el, onComplete) {
-      TweenMax.to(el, 1, { opacity: 1, onComplete });
+    onEnter: function (el, done) {
+      TweenMax.to(el, 1, { opacity: 1, onComplete: done });
     },
-    onLeave: function (el, onComplete) {
-      TweenMax.to(el, 1, { opacity: 0, onComplete });
+    onLeave: function (el, done) {
+      TweenMax.to(el, 1, { opacity: 0, onComplete: done });
     },
   };
 
