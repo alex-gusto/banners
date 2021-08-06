@@ -137,10 +137,10 @@ var Slider = function (options) {
       throw new Error("No slides found! Check: " + selectorOrSlides);
     }
 
-    let prevIndex = null;
+    var prevIndex = null;
     _slides.forEach(function (slide, i) {
       var meta = {
-        prevIndex,
+        prevIndex: prevIndex,
         currentIndex: i,
       };
 
