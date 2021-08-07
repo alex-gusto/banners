@@ -1,5 +1,36 @@
 ```javascript
 var slider = Slider({
+  onAppear: function onAppear(el, meta) {
+    TweenMax.set(el, { scale: 1 });
+  },
+  onDisappear: function onDisappear(el) {
+    TweenMax.set(el, { scale: 0.7, opacity: 0 });
+  },
+  onEnter: function onEnter(el, onComplete, meta) {
+    var timeScale = 1 + meta.speed;
+
+    TweenMax.to(el, 1, {
+      scale: 1,
+      opacity: 1,
+      x: 0,
+      zIndex: 2,
+      onComplete: onComplete,
+    }).timeScale(timeScale);
+  },
+  onLeave: function onLeave(el, onComplete, meta) {
+    var timeScale = 1 + meta.speed;
+    var prevIndex = meta.prevIndex;
+    var currentIndex = meta.currentIndex;
+    var dir = currentIndex < prevIndex ? 1 : -1;
+
+    TweenMax.to(el, 1, {
+      scale: 0.7,
+      x: dir * -30 + "px",
+      opacity: 0,
+      zIndex: 1,
+      onComplete: onComplete,
+    }).timeScale(timeScale);
+  },
   onPlay: function onPlay(meta) {
     var holder = slider.getHolder();
     var root = slider.getRoot();

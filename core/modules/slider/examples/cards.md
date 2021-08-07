@@ -1,5 +1,30 @@
-```javascript
-var slider = Slider();
+````javascript
+var slider = Slider({
+  carousel: false,
+  onAppear: function (el, meta) {
+    var prevIndex = meta.prevIndex;
+    var currentIndex = meta.currentIndex;
+    var dir = currentIndex < prevIndex ? 1 : -1;
+
+    TweenMax.set(el, { x: dir * 100 + "%" });
+  },
+  onDisappear: function (el) {
+    TweenMax.set(el, { x: "0%" });
+  },
+
+  onEnter: function (el, onComplete, meta) {
+    var timeScale = 1 + meta.speed;
+    TweenMax.to(el, 1, { x: "0%", onComplete }).timeScale(timeScale);
+  },
+  onLeave: function (el, onComplete, meta) {
+    var prevIndex = meta.prevIndex;
+    var currentIndex = meta.currentIndex;
+    var dir = currentIndex > prevIndex ? 1 : -1;
+    var timeScale = 1 + meta.speed;
+
+    TweenMax.to(el, 1, { x: dir * 100 + "%", onComplete }).timeScale(timeScale);
+  },
+});
 
 function receiveScrollData(data) {
   var progress = data.scroll / (data.body - data.window);
@@ -7,7 +32,7 @@ function receiveScrollData(data) {
 }
 
 function animate() {
-  slider.init(".slider-slide");
+  slider.init();
 }
 
 ```html
@@ -23,22 +48,7 @@ function animate() {
 </div>
 
 ```css
-.slider {
-  width: 100%;
-  height: 300px;
-}
-
-.slider-holder {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
 .slider-slide {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   counter-increment: counter;
   font-size: 40px;
   color: white;
@@ -76,3 +86,4 @@ function animate() {
 .slider-slide:nth-child(6) {
   background-color: indianred;
 }
+````

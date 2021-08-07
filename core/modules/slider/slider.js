@@ -1,4 +1,4 @@
-var deepCopy = function (obj) {
+var deepCopy = function deepCopy(obj) {
   try {
     return JSON.parse(JSON.stringify(obj));
   } catch (e) {
@@ -6,42 +6,39 @@ var deepCopy = function (obj) {
   }
 };
 
-var Slider = function (options) {
+var Slider = function Slider(options) {
   var DEFAULT_OPTIONS = {
-    onAppear: function (el) {
-      TweenMax.set(el, { opacity: 0 });
-    },
-    onDisappear: function (el) {
-      TweenMax.set(el, { opacity: 1 });
-    },
-    onEnter: function (el, done) {
-      TweenMax.to(el, 1, { opacity: 1, onComplete: done });
-    },
-    onLeave: function (el, done) {
-      TweenMax.to(el, 1, { opacity: 0, onComplete: done });
-    },
+    rootSelector: ".slider",
+    holderSelector: ".slider-holder",
+    slideSelector: ".slider-slide",
+    carousel: true,
   };
 
   var _options = _setupOptions(options);
   var _states = {
     isInit: false,
-    isSliding: false,
   };
-  var _slides;
+  var _root = {
+    el: null,
+    width: 0,
+    height: 0,
+  };
+  var _holder = {
+    el: null,
+    width: 0,
+    height: 0,
+  };
+  var _slideEls;
   var _slidesCount;
   var _currentSlideIndex = 0;
   var _progress = 0;
   var _progressStep;
   var _direction = 1;
 
-  function _getSlides(selectorOrSlides) {
-    if (!selectorOrSlides) {
-      throw new Error("Slides or selector must be set up");
+  function _trigger(eventName) {
+    if (eventName in _options) {
+      _options[eventName].apply(null, Array.prototype.slice.call(arguments, 1));
     }
-
-    return typeof selectorOrSlides === "string"
-      ? Array.prototype.slice.call(document.querySelectorAll(selectorOrSlides))
-      : selectorOrSlides;
   }
 
   function _setupOptions(options) {
@@ -49,12 +46,10 @@ var Slider = function (options) {
       return DEFAULT_OPTIONS;
     }
 
-    const opts = {};
-    for (var key in DEFAULT_OPTIONS) {
+    var opts = deepCopy(DEFAULT_OPTIONS);
+    for (var key in options) {
       if (options.hasOwnProperty(key)) {
         opts[key] = options[key];
-      } else {
-        opts[key] = DEFAULT_OPTIONS[key];
       }
     }
 
@@ -62,31 +57,35 @@ var Slider = function (options) {
   }
 
   function _getSlideEl(index) {
-    return _slides[index];
+    return _slideEls[index];
   }
 
   function _hideSlide(index, meta) {
     var slideEl = _getSlideEl(index);
 
-    if (_options.onBeforeLeave) _options.onBeforeLeave(slideEl, meta);
+    _trigger("onBeforeLeave", slideEl, meta);
 
-    var done = function () {
-      if (_options.onAfterLeave) _options.onAfterLeave(slideEl, meta);
+    var done = function done() {
+      _trigger("onAfterLeave", slideEl, meta);
     };
 
-    _options.onLeave(slideEl, done, meta);
+    _trigger("onLeave", slideEl, done, meta);
   }
 
   function _showSlide(index, meta) {
     var slideEl = _getSlideEl(index);
 
-    if (_options.onBeforeEnter) _options.onBeforeEnter(slideEl, meta);
+    _trigger("onBeforeEnter", slideEl, meta);
 
-    var done = function () {
-      if (_options.onAfterEnter) _options.onAfterEnter(slideEl, meta);
+    var done = function done() {
+      _trigger("onAfterEnter", slideEl, meta);
     };
 
-    _options.onEnter(slideEl, done, meta);
+    _trigger("onEnter", slideEl, done, meta);
+  }
+
+  function _play(meta) {
+    _trigger("onPlay", meta);
   }
 
   function play(progress) {
@@ -99,59 +98,84 @@ var Slider = function (options) {
     if (nextSlideIndex >= _slidesCount || nextSlideIndex === _currentSlideIndex)
       return;
 
+    _play({
+      nextSlideIndex: nextSlideIndex,
+      currentIndex: _currentSlideIndex,
+      progress: progress,
+      speed: speed,
+    });
+
     _hideSlide(_currentSlideIndex, {
       prevIndex: _currentSlideIndex,
       currentIndex: nextSlideIndex,
+      progress: progress,
       speed: speed,
     });
 
     _showSlide(nextSlideIndex, {
       prevIndex: _currentSlideIndex,
       currentIndex: nextSlideIndex,
+      progress: progress,
       speed: speed,
     });
 
     _currentSlideIndex = nextSlideIndex;
   }
 
-  function getSlideEl(index) {
-    return _getSlideEl(index);
-  }
-
-  function current() {
-    return _currentSlideIndex;
-  }
-
-  function direction() {
-    return _direction;
-  }
-
-  function init(selectorOrSlides) {
-    if (_states.isInit) return;
-
-    _slides = _getSlides(selectorOrSlides);
-    _slidesCount = _slides.length;
-    _progressStep = 1 / _slidesCount;
-
-    if (!_slidesCount) {
-      throw new Error("No slides found! Check: " + selectorOrSlides);
-    }
-
+  function _initSlides() {
     var prevIndex = null;
-    _slides.forEach(function (slide, i) {
+    _slideEls.forEach(function (slide, i) {
       var meta = {
         prevIndex: prevIndex,
         currentIndex: i,
       };
 
+      slide.style.width = _root.width + "px";
+      slide.style.height = _root.height + "px";
+
+      if (_options.carousel) {
+        slide.style.left = _root.width * i + "px";
+      }
+
       if (_currentSlideIndex === i) {
-        _options.onDisappear(slide, meta);
+        _trigger("onAppear", slide, meta);
       } else {
-        _options.onAppear(slide, meta);
+        _trigger("onDisappear", slide, meta);
       }
 
       prevIndex = i;
     });
+  }
+
+  function _initSliderSize() {
+    var styles = getComputedStyle(_root.el);
+
+    _root.width = parseFloat(styles.width);
+    _root.height = parseFloat(styles.height);
+
+    if (_options.carousel) {
+      _holder.width = parseFloat(_root.width) * (_slidesCount - 1);
+      _holder.el.style.width = _holder.width + "px";
+    }
+  }
+
+  function init() {
+    if (_states.isInit) return;
+
+    _root.el = document.querySelector(_options.rootSelector);
+    _holder.el = document.querySelector(_options.holderSelector);
+    _slideEls = Array.prototype.slice.call(
+      document.querySelectorAll(_options.slideSelector)
+    );
+    _slidesCount = _slideEls.length;
+    _progressStep = 1 / _slidesCount;
+
+    if (!_slidesCount) {
+      throw new Error("No slides found! Check: " + _options.slideSelector);
+    }
+
+    _initSliderSize();
+    _initSlides();
 
     _states.isInit = true;
   }
@@ -159,9 +183,24 @@ var Slider = function (options) {
   return {
     init: init,
     play: play,
-    getSlideEl: getSlideEl,
-    direction: direction,
-    current: current,
+    getSlideEl: function getSlideEl(index) {
+      return _getSlideEl(index);
+    },
+
+    getRoot: function getRoot() {
+      return _root;
+    },
+
+    getHolder: function getHolder() {
+      return _holder;
+    },
+
+    getCurrentSlideIndex: function getCurrentSlideIndex() {
+      return _currentSlideIndex;
+    },
+
+    getDirection: function getDirection() {
+      return _direction;
+    },
   };
 };
-
