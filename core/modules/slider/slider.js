@@ -1,4 +1,4 @@
-var Slider = function Slider(options) {
+var Slider = function(options) {
   var deepCopy = function deepCopy(obj) {
     try {
       return JSON.parse(JSON.stringify(obj));
