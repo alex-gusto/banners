@@ -1,12 +1,12 @@
-var deepCopy = function deepCopy(obj) {
-  try {
-    return JSON.parse(JSON.stringify(obj));
-  } catch (e) {
-    return obj;
-  }
-};
-
 var Slider = function Slider(options) {
+  var deepCopy = function deepCopy(obj) {
+    try {
+      return JSON.parse(JSON.stringify(obj));
+    } catch (e) {
+      return obj;
+    }
+  };
+
   var DEFAULT_OPTIONS = {
     rootSelector: ".slider",
     holderSelector: ".slider-holder",
@@ -89,7 +89,7 @@ var Slider = function Slider(options) {
   }
 
   function play(progress) {
-    var nextSlideIndex = Math.floor(progress / _progressStep);
+    var nextSlideIndex = Math.ceil(progress / _progressStep);
     var speed = Math.abs(progress - _progress) * Math.PI;
 
     _direction = _progress > progress ? -1 : 1;
@@ -154,18 +154,27 @@ var Slider = function Slider(options) {
     _root.height = parseFloat(styles.height);
 
     if (_options.carousel) {
-      _holder.width = parseFloat(_root.width) * (_slidesCount - 1);
+      _holder.width = parseFloat(_root.width) * _slidesCount;
       _holder.el.style.width = _holder.width + "px";
     }
+  }
+
+  function _onResize() {
+    _initSliderSize();
+    _initSlides();
   }
 
   function init() {
     if (_states.isInit) return;
 
     _root.el = document.querySelector(_options.rootSelector);
-    _holder.el = document.querySelector(_options.holderSelector);
+    if (!_root.el) {
+      throw new Error("No slider found! Check: " + _options.rootSelector);
+    }
+
+    _holder.el = _root.el.querySelector(_options.holderSelector);
     _slideEls = Array.prototype.slice.call(
-      document.querySelectorAll(_options.slideSelector)
+      _root.el.querySelectorAll(_options.slideSelector)
     );
     _slidesCount = _slideEls.length;
     _progressStep = 1 / _slidesCount;
@@ -174,8 +183,9 @@ var Slider = function Slider(options) {
       throw new Error("No slides found! Check: " + _options.slideSelector);
     }
 
-    _initSliderSize();
-    _initSlides();
+    _onResize();
+
+    window.addEventListener("resize", _onResize);
 
     _states.isInit = true;
   }
@@ -183,23 +193,23 @@ var Slider = function Slider(options) {
   return {
     init: init,
     play: play,
-    getSlideEl: function getSlideEl(index) {
+    getSlideEl: function (index) {
       return _getSlideEl(index);
     },
 
-    getRoot: function getRoot() {
+    getRoot: function () {
       return _root;
     },
 
-    getHolder: function getHolder() {
+    getHolder: function () {
       return _holder;
     },
 
-    getCurrentSlideIndex: function getCurrentSlideIndex() {
+    getCurrentSlideIndex: function () {
       return _currentSlideIndex;
     },
 
-    getDirection: function getDirection() {
+    getDirection: function () {
       return _direction;
     },
   };
