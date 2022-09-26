@@ -18,7 +18,7 @@ const settings = params.reduce((acc, param) => {
 }, {});
 
 if (!("name" in settings)) {
-  throw new Error("Set up project name");
+  throw new Error("Set up project name: name='project name'");
 }
 
 function createProjectFolderStructure(projectPath) {

@@ -89,7 +89,7 @@ var Slider = function(options) {
   }
 
   function play(progress) {
-    var nextSlideIndex = Math.ceil(progress / _progressStep);
+    var nextSlideIndex = Math.floor(progress / _progressStep);
     var speed = Math.abs(progress - _progress) * Math.PI;
 
     _direction = _progress > progress ? -1 : 1;
@@ -199,6 +199,10 @@ var Slider = function(options) {
 
     getRoot: function () {
       return _root;
+    },
+
+    setHeight: function(number){
+      
     },
 
     getHolder: function () {
