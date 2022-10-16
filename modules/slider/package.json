@@ -1,0 +1,17 @@
+{
+  "name": "scene-manager",
+  "version": "1.0.0",
+  "description": "onBeforeEnter(el, meta) - set up first slide position. \r meta - prevIndex, currentIndex of slides",
+  "main": "lib/slider.min.js",
+  "directories": {
+    "example": "examples",
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --mode production",
+    "dev": "webpack --watch --mode development"
+  },
+  "author": "",
+  "license": "ISC"
+}

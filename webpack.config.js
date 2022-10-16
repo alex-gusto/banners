@@ -12,7 +12,7 @@ module.exports = (env) => {
         filename: `${name}.html`,
         template: `./${rootDir}/${name}/${name}.html`,
         chunks: [],
-      })
+      }),
     ];
   };
 
@@ -65,8 +65,13 @@ module.exports = (env) => {
       }),
     ],
     devServer: {
-      contentBase: ["dist", "public"],
+      contentBase: ["dist", "public", "modules"],
       publicPath: "/",
+    },
+    resolve: {
+      alias: {
+        slider: path.resolve(__dirname, "./core/modules/slider"),
+      },
     },
   };
 };

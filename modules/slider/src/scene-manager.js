@@ -1,22 +1,37 @@
-var Slider = function(options) {
-  var deepCopy = function deepCopy(obj) {
-    try {
-      return JSON.parse(JSON.stringify(obj));
-    } catch (e) {
-      return obj;
+import { DEFAULT_OPTIONS } from "./default-options";
+import { createQueue, deepCopy, fpsLoop } from "./utils";
+
+function _setupOptions(options) {
+  if (!options) {
+    return DEFAULT_OPTIONS;
+  }
+
+  var opts = deepCopy(DEFAULT_OPTIONS);
+  for (var key in options) {
+    if (options.hasOwnProperty(key)) {
+      opts[key] = options[key];
     }
-  };
+  }
 
-  var DEFAULT_OPTIONS = {
-    rootSelector: ".slider",
-    holderSelector: ".slider-holder",
-    slideSelector: ".slider-slide",
-    carousel: true,
-  };
+  return opts;
+}
 
+function getRandomSlideIndex(currentIndex, slidesCount) {
+  const n = Math.floor(Math.random() * slidesCount);
+
+  if (n === currentIndex) {
+    return getRandomSlideIndex(currentIndex, slidesCount);
+  }
+
+  return n;
+}
+
+export default function Slider(options) {
   var _options = _setupOptions(options);
   var _states = {
     isInit: false,
+    isShowing: false,
+    isHiding: false,
   };
   var _root = {
     el: null,
@@ -31,29 +46,20 @@ var Slider = function(options) {
   var _slideEls;
   var _slidesCount;
   var _currentSlideIndex = 0;
-  var _progress = 0;
+  var _prevProgress = 0;
   var _progressStep;
   var _direction = 1;
+  var _prevDirection = 1;
+
+  var slidesQueue = createQueue();
 
   function _trigger(eventName) {
     if (eventName in _options) {
       _options[eventName].apply(null, Array.prototype.slice.call(arguments, 1));
-    }
-  }
-
-  function _setupOptions(options) {
-    if (!options) {
-      return DEFAULT_OPTIONS;
+      return true;
     }
 
-    var opts = deepCopy(DEFAULT_OPTIONS);
-    for (var key in options) {
-      if (options.hasOwnProperty(key)) {
-        opts[key] = options[key];
-      }
-    }
-
-    return opts;
+    return false;
   }
 
   function _getSlideEl(index) {
@@ -67,9 +73,10 @@ var Slider = function(options) {
 
     var done = function done() {
       _trigger("onAfterLeave", slideEl, meta);
+      _states.isHiding = false;
     };
 
-    _trigger("onLeave", slideEl, done, meta);
+    _states.isHiding = _trigger("onLeave", slideEl, done, meta);
   }
 
   function _showSlide(index, meta) {
@@ -79,9 +86,10 @@ var Slider = function(options) {
 
     var done = function done() {
       _trigger("onAfterEnter", slideEl, meta);
+      _states.isShowing = false;
     };
 
-    _trigger("onEnter", slideEl, done, meta);
+    _states.isShowing = _trigger("onEnter", slideEl, done, meta);
   }
 
   function _play(meta) {
@@ -90,34 +98,31 @@ var Slider = function(options) {
 
   function play(progress) {
     var nextSlideIndex = Math.floor(progress / _progressStep);
-    var speed = Math.abs(progress - _progress) * Math.PI;
 
-    _direction = _progress > progress ? -1 : 1;
-    _progress = progress;
+    var speed = Math.abs(progress - _prevProgress) * Math.PI;
+    _direction = _prevProgress > progress ? -1 : 1;
+    _prevProgress = progress;
 
     if (nextSlideIndex >= _slidesCount || nextSlideIndex === _currentSlideIndex)
       return;
 
-    _play({
-      nextSlideIndex: nextSlideIndex,
+    var meta = {
+      nextIndex: nextSlideIndex,
       currentIndex: _currentSlideIndex,
       progress: progress,
       speed: speed,
-    });
+      direction: _direction,
+    };
 
-    _hideSlide(_currentSlideIndex, {
-      prevIndex: _currentSlideIndex,
-      currentIndex: nextSlideIndex,
-      progress: progress,
-      speed: speed,
-    });
-
-    _showSlide(nextSlideIndex, {
-      prevIndex: _currentSlideIndex,
-      currentIndex: nextSlideIndex,
-      progress: progress,
-      speed: speed,
-    });
+    slidesQueue.enqueue(
+      (function (current, next, meta) {
+        return function () {
+          _play(meta);
+          _hideSlide(current, meta);
+          _showSlide(next, meta);
+        };
+      })(_currentSlideIndex, nextSlideIndex, meta)
+    );
 
     _currentSlideIndex = nextSlideIndex;
   }
@@ -134,7 +139,11 @@ var Slider = function(options) {
       slide.style.height = _root.height + "px";
 
       if (_options.carousel) {
-        slide.style.left = _root.width * i + "px";
+        if (_options.isReversed) {
+          slide.style.right = _root.width * i + "px";
+        } else {
+          slide.style.left = _root.width * i + "px";
+        }
       }
 
       if (_currentSlideIndex === i) {
@@ -156,6 +165,12 @@ var Slider = function(options) {
     if (_options.carousel) {
       _holder.width = parseFloat(_root.width) * _slidesCount;
       _holder.el.style.width = _holder.width + "px";
+
+      if (_options.isReversed) {
+        _holder.el.style.right = 0;
+      } else {
+        _holder.el.style.left = 0;
+      }
     }
   }
 
@@ -187,6 +202,13 @@ var Slider = function(options) {
 
     window.addEventListener("resize", _onResize);
 
+    fpsLoop(function () {
+      if (slidesQueue.isEmpty() || _states.isShowing || _states.isHiding)
+        return;
+
+      slidesQueue.dequeue()();
+    });
+
     _states.isInit = true;
   }
 
@@ -201,9 +223,7 @@ var Slider = function(options) {
       return _root;
     },
 
-    setHeight: function(number){
-      
-    },
+    setHeight: function (number) {},
 
     getHolder: function () {
       return _holder;
@@ -217,4 +237,4 @@ var Slider = function(options) {
       return _direction;
     },
   };
-};
+}
