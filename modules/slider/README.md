@@ -8,7 +8,7 @@
 - `random`- boolean, string, array. Default is false.
   - `true` every slide appears randomly
   - `first`, `last`, `first-last` - every slide appears randomly except first, last or first and last.
-  - [indexes] - every slide apears randomly except provided indexes.
+  - [indexes] - every slide appears randomly except provided indexes.
 
 ### Slider animation hooks
 
