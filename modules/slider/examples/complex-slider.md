@@ -1,5 +1,5 @@
-```javascript
-var slider = Slider({
+````javascript
+var sceneManager = SceneManager({
   onAppear: function onAppear(el, meta) {
     TweenMax.set(el, { scale: 1 });
   },
@@ -19,9 +19,7 @@ var slider = Slider({
   },
   onLeave: function onLeave(el, onComplete, meta) {
     var timeScale = 1 + meta.speed;
-    var prevIndex = meta.prevIndex;
-    var currentIndex = meta.currentIndex;
-    var dir = currentIndex < prevIndex ? 1 : -1;
+    var dir = meta.direction
 
     TweenMax.to(el, 1, {
       scale: 0.7,
@@ -32,20 +30,24 @@ var slider = Slider({
     }).timeScale(timeScale);
   },
   onPlay: function onPlay(meta) {
-    var holder = slider.getHolder();
-    var root = slider.getRoot();
+    var holder = sceneManager.getHolder();
+    var root = sceneManager.getRoot();
 
-    TweenMax.to(holder.el, 1, { x: -root.width * meta.nextSlideIndex + "px" });
+    TweenMax.to(holder.el, 1, { x: -root.width * meta.nextIndex + "px" });
   },
 });
 
 function receiveScrollData(data) {
-  var progress = data.scroll / (data.body - data.window);
-  slider.play(progress);
-}
+   TweenMax.set(".slider", {
+    height: data.window,
+  });
 
-function animate() {
-  slider.init();
+  if(!sceneManager.isInited()) {
+    sceneManager.init();
+  }
+
+  var progress = data.scroll / (data.body - data.window);
+  sceneManager.play(progress);
 }
 
 ```html
@@ -99,3 +101,4 @@ function animate() {
 .slider-slide:nth-child(6) {
   background-color: indianred;
 }
+````

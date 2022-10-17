@@ -1,16 +1,25 @@
-```javascript
-var slider = Slider({
+````javascript
+var sceneManager = SceneManager({
+  isReversed: true,
   onPlay: function onPlay(meta) {
-    var holder = slider.getHolder();
-    var root = slider.getRoot();
+    var holder = sceneManager.getHolder();
+    var root = sceneManager.getRoot();
 
-    TweenMax.to(holder.el, 1, { x: -root.width * meta.nextSlideIndex + "px" });
+    TweenMax.to(holder.el, 1, { x: root.width * meta.nextIndex + "px" });
   },
 });
 
 function receiveScrollData(data) {
+    TweenMax.set(".slider", {
+    height: data.window,
+  });
+
+  if(!sceneManager.isInited()) {
+    sceneManager.init();
+  }
+
   var progress = data.scroll / (data.body - data.window);
-  slider.play(progress);
+  sceneManager.play(progress);
 }
 
 function animate() {
@@ -68,3 +77,4 @@ function animate() {
 .slider-slide:nth-child(6) {
   background-color: indianred;
 }
+````

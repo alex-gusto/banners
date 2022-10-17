@@ -1,25 +1,27 @@
 ````javascript
-var slider = Slider({
+var sceneManager = SceneManager({
   carousel: false,
-  onAppear: function (el, meta) {
-    var prevIndex = meta.prevIndex;
-    var currentIndex = meta.currentIndex;
-    var dir = currentIndex < prevIndex ? 1 : -1;
-
-    TweenMax.set(el, { x: dir * 100 + "%" });
-  },
-  onDisappear: function (el) {
+  random: "first-last",
+  onAppear: function (el) {
     TweenMax.set(el, { x: "0%" });
   },
-
+  onDisappear: function (el) {
+    TweenMax.set(el, { x: "100%" });
+  },
+  onBeforeEnter: function (el, meta) {
+    var nextIndex = meta.nextIndex;
+    var currentIndex = meta.currentIndex;
+    var dir = currentIndex > nextIndex ? 1 : -1;
+    TweenMax.set(el, { x: dir * 100 + "%" });
+  },
   onEnter: function (el, onComplete, meta) {
     var timeScale = 1 + meta.speed;
     TweenMax.to(el, 1, { x: "0%", onComplete }).timeScale(timeScale);
   },
   onLeave: function (el, onComplete, meta) {
-    var prevIndex = meta.prevIndex;
+    var nextIndex = meta.nextIndex;
     var currentIndex = meta.currentIndex;
-    var dir = currentIndex > prevIndex ? 1 : -1;
+    var dir = currentIndex > nextIndex ? 1 : -1;
     var timeScale = 1 + meta.speed;
 
     TweenMax.to(el, 1, { x: dir * 100 + "%", onComplete }).timeScale(timeScale);
@@ -27,12 +29,16 @@ var slider = Slider({
 });
 
 function receiveScrollData(data) {
-  var progress = data.scroll / (data.body - data.window);
-  slider.play(progress);
-}
+  TweenMax.set(".slider", {
+    height: data.window,
+  });
 
-function animate() {
-  slider.init();
+  if(!sceneManager.isInited()) {
+    sceneManager.init();
+  }
+
+  var progress = data.scroll / (data.body - data.window);
+  sceneManager.play(progress);
 }
 
 ```html

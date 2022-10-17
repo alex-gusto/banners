@@ -1,6 +1,17 @@
 import { DEFAULT_OPTIONS, RANDOM_OPTIONS } from "./literals";
 import { createQueue, deepCopy, fpsLoop, Numbers } from "./utils";
 
+const throttle = (func, delay = 1000) => {
+  let prev = 0;
+  return (...args) => {
+    const now = new Date().getTime();
+    if (now - prev > delay) {
+      prev = now;
+      return func(...args);
+    }
+  };
+};
+
 function parseRandom(random, lastSlideIndex) {
   if (!random) return false;
 
@@ -123,7 +134,7 @@ export default function (options) {
     _trigger("onPlay", meta);
   }
 
-  function _addToQueue(meta) {
+  const _addToQueue = throttle((meta) => {
     slidesQueue.enqueue(
       (function (current, next, meta) {
         return function () {
@@ -133,7 +144,7 @@ export default function (options) {
         };
       })(meta.currentIndex, meta.nextIndex, meta)
     );
-  }
+  }, 0);
 
   function _getNextSlideIndex(progress) {
     const index = Numbers.floatStrip(progress / _progressStep);
@@ -152,12 +163,13 @@ export default function (options) {
   function play(progress) {
     progress = Numbers.clampProgress(progress);
 
-    const progressDelta = Math.abs(progress - _currentProgress);
-    if (progressDelta < _progressStep) return;
+    const speed = Math.abs(progress - _prevProgress);
 
-    var speed = Math.abs(progress - _prevProgress) * Math.PI;
     _direction = _prevProgress > progress ? -1 : 1;
     _prevProgress = progress;
+
+    const progressDelta = Math.abs(progress - _currentProgress);
+    if (progressDelta < _progressStep) return;
 
     let steps = Math.floor(progressDelta / _progressStep);
     while (steps--) {
@@ -174,6 +186,7 @@ export default function (options) {
       };
 
       _addToQueue(meta);
+
       _currentSlideIndex = meta.nextIndex;
     }
   }
@@ -277,6 +290,10 @@ export default function (options) {
     },
 
     setHeight: function (number) {},
+
+    isInited() {
+      return _states.isInit;
+    },
 
     getHolder: function () {
       return _holder;
