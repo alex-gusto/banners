@@ -35,20 +35,20 @@
 
 ### Methods
 
-```
-isInited() - returns true/false
 
-init() - init slider.
+`isInited()` - returns true/false
 
-play(progress)
+`init()` - init slider.
 
-getSlideEl(index)
+`play(progress)`
 
-getRoot() - returns root el, height, width
+`getSlideEl(index)`
 
-getHolder() - returns holder el, height, width
+`getRoot()` - returns root el, height, width
 
-direction() - return current scroll direction
+`getHolder()` - returns holder el, height, width
 
-getCurrentSlideIndex()
-```
+`direction()` - return current scroll direction
+
+`getCurrentSlideIndex()`
+
