@@ -177,8 +177,12 @@ export default function (options) {
         _currentProgress + _progressStep * _direction
       );
 
+      const nextIndex = _getNextSlideIndex(_currentProgress);
+
+      if (nextIndex >= _slidesCount || nextIndex === _currentSlideIndex) return;
+
       var meta = {
-        nextIndex: _getNextSlideIndex(_currentProgress),
+        nextIndex,
         currentIndex: _currentSlideIndex,
         progress: progress,
         speed: speed,
@@ -187,7 +191,7 @@ export default function (options) {
 
       _addToQueue(meta);
 
-      _currentSlideIndex = meta.nextIndex;
+      _currentSlideIndex = nextIndex;
     }
   }
 
