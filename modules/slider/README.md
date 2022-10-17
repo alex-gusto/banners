@@ -28,10 +28,10 @@
 
 ### hooks argument `meta`
 
--`currentIndex` - current slide index
--`nextIndex` - next slide index
--`direction` - scroll direction 1 - down, -1 up
--`speed` - fake scroll speed, need to re-think
+- `currentIndex` - current slide index
+- `nextIndex` - next slide index
+- `direction` - scroll direction 1 - down, -1 up
+- `speed` - fake scroll speed, need to re-think
 
 ### Methods
 
