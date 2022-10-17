@@ -4,5 +4,7 @@ export const DEFAULT_OPTIONS = {
   slideSelector: ".slider-slide",
   carousel: true,
   isReversed: false,
-  isRandom: false,
+  random: false,
 };
+
+export const RANDOM_OPTIONS = ["first", "first-last", "last"];
