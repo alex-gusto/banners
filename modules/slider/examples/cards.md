@@ -1,7 +1,15 @@
 ````javascript
 var sceneManager = SceneManager({
   carousel: false,
-  random: "first-last",
+  skipDelay: 200,
+  ranges: [
+    [0, 0.35],
+    [0.35, 0.5],
+    [0.5, 0.7],
+    [0.7, 0.8],
+    [0.8, 0.9],
+    [0.9, 1],
+  ],
   onAppear: function (el) {
     TweenMax.set(el, { x: "0%" });
   },
@@ -41,6 +49,14 @@ function receiveScrollData(data) {
   sceneManager.play(progress);
 }
 
+function animate() {
+  document.querySelectorAll(".slider-nav button").forEach((el) => {
+    el.addEventListener("click", function () {
+      sceneManager.toSlide(+el.dataset.index);
+    });
+  });
+}
+
 ```html
 <div class="slider">
  <div class="slider-holder">
@@ -51,6 +67,11 @@ function receiveScrollData(data) {
     <div class="slider-slide"></div>
     <div class="slider-slide"></div>
  </div>
+</div>
+<div class="slider-nav">
+  <button data-index="1">1</button>
+  <button data-index="3">3</button>
+  <button data-index="5">5</button>
 </div>
 
 ```css

@@ -1,4 +1,5 @@
 import { DEFAULT_OPTIONS, RANDOM_OPTIONS } from "./literals";
+import "./styles.css";
 import { createQueue, debounce, deepCopy, fpsLoop, Numbers } from "./utils";
 
 function parseRandom(random, lastSlideIndex) {
@@ -70,14 +71,28 @@ export default function (options) {
     width: 0,
     height: 0,
   };
+
+  const _nav = {
+    el: null,
+    buttons: [],
+  };
+
+  const _arrows = {
+    prev: null,
+    next: null,
+  };
+
   var _slideEls;
   var _slidesCount;
   var _currentSlideIndex = 0;
-  var _prevProgress = 0;
   var _currentProgress = 0;
   var _progressStep;
   var _direction = 1;
   const _ranges = [];
+
+  const _navClass = _options.navSelector.replace(".", "");
+  const _navButtonClass = `${_navClass}__button`;
+  const _navButtonActiveClass = `${_navButtonClass}--active`;
 
   var slidesQueue = createQueue();
 
@@ -132,6 +147,8 @@ export default function (options) {
     slidesQueue.enqueue(
       (function (current, next, meta) {
         return function () {
+          if (_options.nav) _updateActiveNavButton(next);
+
           _play(meta);
           _hideSlide(current, meta);
           _showSlide(next, meta);
@@ -161,11 +178,14 @@ export default function (options) {
     return index;
   }
 
-  const _createNextSlideMeta = (speed = 1) => {
-    const nextIndex = _getNextSlideIndex(_currentProgress);
+  const _createNextSlideMeta = (speed = 0, nextIndex) => {
+    const _nextIndex =
+      nextIndex === undefined
+        ? _getNextSlideIndex(_currentProgress)
+        : nextIndex;
 
     return {
-      nextIndex,
+      nextIndex: _nextIndex,
       currentIndex: _currentSlideIndex,
       progress: _currentProgress,
       speed,
@@ -236,6 +256,17 @@ export default function (options) {
   }
 
   function _initSlideRanges(progressStep, slidesCount) {
+    if (_options.ranges) {
+      if (slidesCount !== _options.ranges.length) {
+        throw new Error(
+          `The count of ranges should be the same as count of slides! Ranges count: ${_options.ranges.length}, slides count: ${slidesCount}`
+        );
+      }
+
+      _ranges.push(..._options.ranges);
+      return;
+    }
+
     let i = 0;
 
     while (i < slidesCount) {
@@ -245,8 +276,91 @@ export default function (options) {
       _ranges.push([min, max]);
       i++;
     }
+  }
 
-    console.log(_ranges);
+  function toScene(index) {
+    if (index < 0 || index >= _slidesCount) {
+      throw new Error(`Slide index: ${index} is not in slides range!`);
+    }
+
+    _addToQueue(_createNextSlideMeta(0, index));
+  }
+
+  function nextScene() {
+    let index = _currentSlideIndex + 1;
+    index = index >= _slidesCount ? 0 : index;
+    _addToQueue(_createNextSlideMeta(0, index));
+  }
+
+  function prevScene() {
+    let index = _currentSlideIndex - 1;
+    index = index < 0 ? _slidesCount - 1 : index;
+    _addToQueue(_createNextSlideMeta(0, index));
+  }
+
+  function _updateActiveNavButton(index) {
+    _nav.buttons.forEach((b) => b.classList.remove(_navButtonActiveClass));
+    _nav.buttons[index].classList.add(_navButtonActiveClass);
+  }
+
+  function _initNav() {
+    _nav.el = _root.el.querySelector(_options.navSelector);
+
+    if (!_nav.el) {
+      _nav.el = document.createElement("div");
+      _nav.el.classList.add(_navClass);
+
+      _root.el.appendChild(_nav.el);
+    }
+
+    let i = 0;
+    while (i < _slidesCount) {
+      const el = document.createElement("BUTTON");
+      el.classList.add(_navButtonClass);
+      el.dataset.index = i;
+
+      if (_currentSlideIndex === i) {
+        el.classList.add(_navButtonActiveClass);
+      }
+
+      el.addEventListener("click", () => toScene(+el.dataset.index));
+
+      _nav.el.appendChild(el);
+      _nav.buttons.push(el);
+      i++;
+    }
+  }
+
+  function _initArrows() {
+    const arrowClass = _options.arrowsSelector.replace(".", "");
+    const prevArrowClass = `${arrowClass}--prev`;
+    const nextArrowClass = `${arrowClass}--next`;
+
+    const createArrow = (className) => {
+      const el = document.createElement("BUTTON");
+      el.classList.add(arrowClass);
+      el.classList.add(className);
+
+      _root.el.appendChild(el);
+
+      return el;
+    };
+
+    _arrows.prev = _root.el.querySelector(prevArrowClass);
+    _arrows.next = _root.el.querySelector(nextArrowClass);
+
+    if (!_arrows.prev) {
+      _arrows.prev = createArrow(prevArrowClass);
+      _arrows.prev.innerText = "<";
+    }
+
+    if (!_arrows.next) {
+      _arrows.next = createArrow(nextArrowClass);
+      _arrows.next.innerText = ">";
+    }
+
+    _arrows.prev.addEventListener("click", prevScene);
+    _arrows.next.addEventListener("click", nextScene);
   }
 
   function _onResize() {
@@ -263,11 +377,19 @@ export default function (options) {
     }
 
     _holder.el = _root.el.querySelector(_options.holderSelector);
-    _slideEls = [..._root.el.querySelectorAll(_options.slideSelector)];
+    _slideEls = [..._root.el.querySelectorAll(_options.sceneSelector)];
     _slidesCount = _slideEls.length;
 
     if (!_slidesCount) {
-      throw new Error("No slides found! Check: " + _options.slideSelector);
+      throw new Error("No slides found! Check: " + _options.sceneSelector);
+    }
+
+    if (_options.nav) {
+      _initNav();
+    }
+
+    if (_options.arrows) {
+      _initArrows();
     }
 
     _progressStep = 1 / _slidesCount;
@@ -299,8 +421,6 @@ export default function (options) {
       return _root;
     },
 
-    setHeight: function (number) {},
-
     isInited() {
       return _states.isInit;
     },
@@ -316,5 +436,9 @@ export default function (options) {
     getDirection: function () {
       return _direction;
     },
+
+    toScene,
+    nextScene,
+    prevScene,
   };
 }

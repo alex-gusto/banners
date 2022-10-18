@@ -1,11 +1,27 @@
 ### Slider options
 
 - `carousel` - boolean, default is true.
+- `nav` - boolean, default is false. Activate navigation buttons.
+- `arrows` - boolean, default is false. Activate navigation arrows (prev/next).
 - `skipDelay` - default is 200. Delay while user scrolls. Less deplay skips less slides.
 - `isReversed` - boolean, default is false. Create reversed carousel.
-- `rootSelector`- string, default is ".slider". Root slider class.
-- `holderSelector`- string, default is ".slider-holder". Holder slides class.
-- `slideSelector`- string. default is ".slider-slide". Class of every slide.
+
+- `rootSelector`- string, default is ".scene-manager". Root slider class.
+- `holderSelector`- string, default is ".scene-manager-holder". Holder scenes class.
+- `sceneSelector`- string. default is ".scene-manager-scene". Class of every scene.
+- `navSelector` - Default is ".scene-manager-nav". Class for navigation holder buttons.
+- `arrowsSelector` - Default is ".scene-manager-arrow". Class for navigation arrows.
+  Next arrow class: ".scene-manager-arrow--next".
+  Prev arrow class: ".scene-manager-arrow--prev"
+- `ranges` - Array of arrays [[min, max]]. Custom ranges for appearing slides. Default step for range is (1 / slides count)
+  ```
+  [
+    [0, 0.25],
+    [0.25, 0.5],
+    [0.5, 0.75],
+    [0.75, 1]
+  ]
+  ```
 - `random`- boolean, string, array. Default is false.
   - `true` every slide appears randomly
   - `first`, `last`, `first-last` - every slide appears randomly except first, last or first and last.
@@ -36,7 +52,6 @@
 
 ### Methods
 
-
 `isInited()` - returns true/false
 
 `init()` - init slider.
@@ -53,3 +68,8 @@
 
 `getCurrentSlideIndex()`
 
+`toScene(index)` - move to specific scene
+
+`nextScene()` - move to next scene
+
+`prevScene()` - move to prev scene

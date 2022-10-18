@@ -31,6 +31,10 @@ module.exports = ({ name, path, filename }) => {
             },
           ],
         },
+        {
+          test: /\.css$/i,
+          use: ["style-loader", "css-loader"],
+        },
       ],
     },
   };

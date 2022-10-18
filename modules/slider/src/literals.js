@@ -1,13 +1,15 @@
 export const DEFAULT_OPTIONS = {
-  rootSelector: ".slider",
-  holderSelector: ".slider-holder",
-  slideSelector: ".slider-slide",
+  rootSelector: ".scene-manager",
+  holderSelector: ".scene-manager-holder",
+  sceneSelector: ".scene-manager-scene",
+  navSelector: ".scene-manager-nav",
+  arrowsSelector: ".scene-manager-arrow",
   carousel: true,
   isReversed: false,
   skipDelay: 200,
   random: false,
+  nav: false,
+  arrows: false,
 };
 
 export const RANDOM_OPTIONS = ["first", "first-last", "last"];
-
-export const SPEED_LIMIT = 0.05;
