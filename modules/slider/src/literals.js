@@ -4,7 +4,7 @@ export const DEFAULT_OPTIONS = {
   slideSelector: ".slider-slide",
   carousel: true,
   isReversed: false,
-  skip: false,
+  skipDelay: 200,
   random: false,
 };
 

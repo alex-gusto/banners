@@ -1,6 +1,7 @@
 ### Slider options
 
 - `carousel` - boolean, default is true.
+- `skipDelay` - default is 200. Delay while user scrolls. Less deplay skips less slides.
 - `isReversed` - boolean, default is false. Create reversed carousel.
 - `rootSelector`- string, default is ".slider". Root slider class.
 - `holderSelector`- string, default is ".slider-holder". Holder slides class.

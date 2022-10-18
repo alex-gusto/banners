@@ -1,16 +1,5 @@
 import { DEFAULT_OPTIONS, RANDOM_OPTIONS } from "./literals";
-import { createQueue, deepCopy, fpsLoop, Numbers } from "./utils";
-
-const throttle = (func, delay = 1000) => {
-  let prev = 0;
-  return (...args) => {
-    const now = new Date().getTime();
-    if (now - prev > delay) {
-      prev = now;
-      return func(...args);
-    }
-  };
-};
+import { createQueue, debounce, deepCopy, fpsLoop, Numbers } from "./utils";
 
 function parseRandom(random, lastSlideIndex) {
   if (!random) return false;
@@ -88,6 +77,7 @@ export default function (options) {
   var _currentProgress = 0;
   var _progressStep;
   var _direction = 1;
+  const _ranges = [];
 
   var slidesQueue = createQueue();
 
@@ -134,7 +124,11 @@ export default function (options) {
     _trigger("onPlay", meta);
   }
 
-  const _addToQueue = throttle((meta) => {
+  const _addToQueue = (meta) => {
+    const { nextIndex, currentIndex } = meta;
+
+    if (nextIndex >= _slidesCount || nextIndex === _currentSlideIndex) return;
+
     slidesQueue.enqueue(
       (function (current, next, meta) {
         return function () {
@@ -142,57 +136,56 @@ export default function (options) {
           _hideSlide(current, meta);
           _showSlide(next, meta);
         };
-      })(meta.currentIndex, meta.nextIndex, meta)
+      })(currentIndex, nextIndex, meta)
     );
-  }, 0);
+
+    _currentSlideIndex = nextIndex;
+  };
 
   function _getNextSlideIndex(progress) {
-    const index = Numbers.floatStrip(progress / _progressStep);
-    const { random } = _options;
+    const index = _ranges.findIndex(([min, max]) => {
+      if (max === 1 && progress === 1) return true;
 
-    if (random && !random.includes(index)) {
-      return getRandomSlideIndex(
-        [_currentSlideIndex].concat(random),
-        _slidesCount
-      );
-    }
+      return progress >= min && progress < max;
+    });
+
+    // const { random } = _options;
+
+    // if (random && !random.includes(index)) {
+    //   return getRandomSlideIndex(
+    //     [_currentSlideIndex].concat(random),
+    //     _slidesCount
+    //   );
+    // }
 
     return index;
   }
 
+  const _createNextSlideMeta = (speed = 1) => {
+    const nextIndex = _getNextSlideIndex(_currentProgress);
+
+    return {
+      nextIndex,
+      currentIndex: _currentSlideIndex,
+      progress: _currentProgress,
+      speed,
+      direction: _direction,
+    };
+  };
+
+  const _runSlideChange = debounce((speed) => {
+    _addToQueue(_createNextSlideMeta(speed));
+  }, _options.skipDelay);
+
   function play(progress) {
     progress = Numbers.clampProgress(progress);
 
-    const speed = Math.abs(progress - _prevProgress);
+    const speed = Math.abs(progress - _currentProgress);
 
-    _direction = _prevProgress > progress ? -1 : 1;
-    _prevProgress = progress;
+    _direction = _currentProgress > progress ? -1 : 1;
+    _currentProgress = progress;
 
-    const progressDelta = Math.abs(progress - _currentProgress);
-    if (progressDelta < _progressStep) return;
-
-    let steps = Math.floor(progressDelta / _progressStep);
-    while (steps--) {
-      _currentProgress = Numbers.floatStrip(
-        _currentProgress + _progressStep * _direction
-      );
-
-      const nextIndex = _getNextSlideIndex(_currentProgress);
-
-      if (nextIndex >= _slidesCount || nextIndex === _currentSlideIndex) return;
-
-      var meta = {
-        nextIndex,
-        currentIndex: _currentSlideIndex,
-        progress: progress,
-        speed: speed,
-        direction: _direction,
-      };
-
-      _addToQueue(meta);
-
-      _currentSlideIndex = nextIndex;
-    }
+    _runSlideChange(speed);
   }
 
   function _initSlides() {
@@ -242,6 +235,20 @@ export default function (options) {
     }
   }
 
+  function _initSlideRanges(progressStep, slidesCount) {
+    let i = 0;
+
+    while (i < slidesCount) {
+      const min = Numbers.floatStrip(i * progressStep);
+      const max = Numbers.floatStrip(i * progressStep + progressStep);
+
+      _ranges.push([min, max]);
+      i++;
+    }
+
+    console.log(_ranges);
+  }
+
   function _onResize() {
     _initSliderSize();
     _initSlides();
@@ -256,16 +263,15 @@ export default function (options) {
     }
 
     _holder.el = _root.el.querySelector(_options.holderSelector);
-    _slideEls = Array.prototype.slice.call(
-      _root.el.querySelectorAll(_options.slideSelector)
-    );
+    _slideEls = [..._root.el.querySelectorAll(_options.slideSelector)];
     _slidesCount = _slideEls.length;
-    _progressStep = Numbers.floatStrip(1 / _slidesCount);
 
     if (!_slidesCount) {
       throw new Error("No slides found! Check: " + _options.slideSelector);
     }
 
+    _progressStep = 1 / _slidesCount;
+    _initSlideRanges(_progressStep, _slidesCount);
     _options.random = parseRandom(_options.random, _slidesCount - 1);
 
     _onResize();
