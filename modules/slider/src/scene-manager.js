@@ -104,10 +104,10 @@ export default function (options) {
 
     _trigger("onBeforeLeave", slideEl, meta);
 
-    var done = function done() {
+    var done = debounce(function () {
       _trigger("onAfterLeave", slideEl, meta);
       _states.isHiding = false;
-    };
+    }, 0);
 
     _states.isHiding = _trigger("onLeave", slideEl, done, meta);
   }
@@ -117,10 +117,10 @@ export default function (options) {
 
     _trigger("onBeforeEnter", slideEl, meta);
 
-    var done = function done() {
+    var done = debounce(() => {
       _trigger("onAfterEnter", slideEl, meta);
       _states.isShowing = false;
-    };
+    }, 0);
 
     _states.isShowing = _trigger("onEnter", slideEl, done, meta);
   }
@@ -216,11 +216,10 @@ export default function (options) {
   }
 
   function _initSlides() {
-    var prevIndex = null;
     _slideEls.forEach(function (slide, i) {
       var meta = {
-        prevIndex: prevIndex,
-        currentIndex: i,
+        nextIndex: i,
+        currentIndex: _currentSlideIndex,
       };
 
       slide.style.width = _root.width + "px";
@@ -239,8 +238,6 @@ export default function (options) {
       } else {
         _trigger("onDisappear", slide, meta);
       }
-
-      prevIndex = i;
     });
   }
 
