@@ -1,3 +1,4 @@
+import { initArrows, initNav } from "./core";
 import { DEFAULT_OPTIONS, RANDOM_OPTIONS } from "./literals";
 import "./styles.css";
 import { createQueue, debounce, deepCopy, fpsLoop, Numbers } from "./utils";
@@ -72,27 +73,16 @@ export default function (options) {
     height: 0,
   };
 
-  const _nav = {
-    el: null,
-    buttons: [],
-  };
-
-  const _arrows = {
-    prev: null,
-    next: null,
-  };
+  var _nav;
 
   var _slideEls;
   var _slidesCount;
   var _currentSlideIndex = 0;
+  var _realProgressIndex = 0;
   var _currentProgress = 0;
   var _progressStep;
   var _direction = 1;
   const _ranges = [];
-
-  const _navClass = _options.navSelector.replace(".", "");
-  const _navButtonClass = `${_navClass}__button`;
-  const _navButtonActiveClass = `${_navButtonClass}--active`;
 
   var slidesQueue = createQueue();
 
@@ -136,18 +126,22 @@ export default function (options) {
   }
 
   function _play(meta) {
-    _trigger("onPlay", meta);
+    const isFired = _trigger("onPlay", meta);
+
+    if (!isFired && _options.carousel) {
+      throw new Error("Provide onPlay hook for carousel move!");
+    }
   }
 
   const _addToQueue = (meta) => {
-    const { nextIndex, currentIndex } = meta;
+    const { nextIndex, currentIndex, realIndex } = meta;
 
-    if (nextIndex >= _slidesCount || nextIndex === _currentSlideIndex) return;
+    if (realIndex >= _slidesCount || realIndex === _realProgressIndex) return;
 
     slidesQueue.enqueue(
       (function (current, next, meta) {
         return function () {
-          if (_options.nav) _updateActiveNavButton(next);
+          if (_options.nav) _nav.updateActiveNavButton(next);
 
           _play(meta);
           _hideSlide(current, meta);
@@ -157,35 +151,48 @@ export default function (options) {
     );
 
     _currentSlideIndex = nextIndex;
+    _realProgressIndex = realIndex;
   };
 
-  function _getNextSlideIndex(progress) {
-    const index = _ranges.findIndex(([min, max]) => {
+  function _getNextSlideIndex(progress, nextIndex) {
+    if (nextIndex !== undefined) {
+      return {
+        realIndex: nextIndex,
+      };
+    }
+
+    const realIndex = _ranges.findIndex(([min, max]) => {
       if (max === 1 && progress === 1) return true;
 
       return progress >= min && progress < max;
     });
 
-    // const { random } = _options;
+    function getRandomIndex() {
+      const { random } = _options;
 
-    // if (random && !random.includes(index)) {
-    //   return getRandomSlideIndex(
-    //     [_currentSlideIndex].concat(random),
-    //     _slidesCount
-    //   );
-    // }
+      if (!random || random.includes(realIndex)) return;
 
-    return index;
+      return getRandomSlideIndex(
+        [_currentSlideIndex].concat(random),
+        _slidesCount
+      );
+    }
+
+    return {
+      realIndex,
+      randomIndex: getRandomIndex(),
+    };
   }
 
   const _createNextSlideMeta = (speed = 0, nextIndex) => {
-    const _nextIndex =
-      nextIndex === undefined
-        ? _getNextSlideIndex(_currentProgress)
-        : nextIndex;
+    const { realIndex, randomIndex } = _getNextSlideIndex(
+      _currentProgress,
+      nextIndex
+    );
 
     return {
-      nextIndex: _nextIndex,
+      nextIndex: randomIndex !== undefined ? randomIndex : realIndex,
+      realIndex,
       currentIndex: _currentSlideIndex,
       progress: _currentProgress,
       speed,
@@ -287,80 +294,15 @@ export default function (options) {
   }
 
   function nextScene() {
-    let index = _currentSlideIndex + 1;
+    let index = _realProgressIndex + 1;
     index = index >= _slidesCount ? 0 : index;
     _addToQueue(_createNextSlideMeta(0, index));
   }
 
   function prevScene() {
-    let index = _currentSlideIndex - 1;
+    let index = _realProgressIndex - 1;
     index = index < 0 ? _slidesCount - 1 : index;
     _addToQueue(_createNextSlideMeta(0, index));
-  }
-
-  function _updateActiveNavButton(index) {
-    _nav.buttons.forEach((b) => b.classList.remove(_navButtonActiveClass));
-    _nav.buttons[index].classList.add(_navButtonActiveClass);
-  }
-
-  function _initNav() {
-    _nav.el = _root.el.querySelector(_options.navSelector);
-
-    if (!_nav.el) {
-      _nav.el = document.createElement("div");
-      _nav.el.classList.add(_navClass);
-
-      _root.el.appendChild(_nav.el);
-    }
-
-    let i = 0;
-    while (i < _slidesCount) {
-      const el = document.createElement("BUTTON");
-      el.classList.add(_navButtonClass);
-      el.dataset.index = i;
-
-      if (_currentSlideIndex === i) {
-        el.classList.add(_navButtonActiveClass);
-      }
-
-      el.addEventListener("click", () => toScene(+el.dataset.index));
-
-      _nav.el.appendChild(el);
-      _nav.buttons.push(el);
-      i++;
-    }
-  }
-
-  function _initArrows() {
-    const arrowClass = _options.arrowsSelector.replace(".", "");
-    const prevArrowClass = `${arrowClass}--prev`;
-    const nextArrowClass = `${arrowClass}--next`;
-
-    const createArrow = (className) => {
-      const el = document.createElement("BUTTON");
-      el.classList.add(arrowClass);
-      el.classList.add(className);
-
-      _root.el.appendChild(el);
-
-      return el;
-    };
-
-    _arrows.prev = _root.el.querySelector(prevArrowClass);
-    _arrows.next = _root.el.querySelector(nextArrowClass);
-
-    if (!_arrows.prev) {
-      _arrows.prev = createArrow(prevArrowClass);
-      _arrows.prev.innerText = "<";
-    }
-
-    if (!_arrows.next) {
-      _arrows.next = createArrow(nextArrowClass);
-      _arrows.next.innerText = ">";
-    }
-
-    _arrows.prev.addEventListener("click", prevScene);
-    _arrows.next.addEventListener("click", nextScene);
   }
 
   function _onResize() {
@@ -385,11 +327,23 @@ export default function (options) {
     }
 
     if (_options.nav) {
-      _initNav();
+      _nav = initNav(_root.el, {
+        navSelector: _options.navSelector,
+        slidesCount: _slidesCount,
+        currentSlideIndex: _currentSlideIndex,
+        onButtonClick(index) {
+          console.log({ index });
+          toScene(index);
+        },
+      });
     }
 
     if (_options.arrows) {
-      _initArrows();
+      initArrows(_root.el, {
+        arrowsSelector: _options.arrowsSelector,
+        onPrevClick: prevScene,
+        onNextClick: nextScene,
+      });
     }
 
     _progressStep = 1 / _slidesCount;

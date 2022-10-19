@@ -27,26 +27,26 @@ function animate() {
 }
 
 ```html
-<div class="slider">
- <div class="slider-holder">
-    <div class="slider-slide"></div>
-    <div class="slider-slide"></div>
-    <div class="slider-slide"></div>
-    <div class="slider-slide"></div>
-    <div class="slider-slide"></div>
-    <div class="slider-slide"></div>
+<div class="scene-manager">
+ <div class="scene-manager-holder">
+    <div class="scene-manager-scene"></div>
+    <div class="scene-manager-scene"></div>
+    <div class="scene-manager-scene"></div>
+    <div class="scene-manager-scene"></div>
+    <div class="scene-manager-scene"></div>
+    <div class="scene-manager-scene"></div>
  </div>
 </div>
 
 ```css
-.slider-slide {
+.scene-manager-scene {
   counter-increment: counter;
   font-size: 40px;
   color: white;
   text-align: center;
 }
 
-.slider-slide:after {
+.scene-manager-scene:after {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -54,27 +54,27 @@ function animate() {
   content: counter(counter);
 }
 
-.slider-slide:nth-child(1) {
+.scene-manager-scene:nth-child(1) {
   background-color: green;
 }
 
-.slider-slide:nth-child(2) {
+.scene-manager-scene:nth-child(2) {
   background-color: blueviolet;
 }
 
-.slider-slide:nth-child(3) {
+.scene-manager-scene:nth-child(3) {
   background-color: violet;
 }
 
-.slider-slide:nth-child(4) {
+.scene-manager-scene:nth-child(4) {
   background-color: teal;
 }
 
-.slider-slide:nth-child(5) {
+.scene-manager-scene:nth-child(5) {
   background-color: yellowgreen;
 }
 
-.slider-slide:nth-child(6) {
+.scene-manager-scene:nth-child(6) {
   background-color: indianred;
 }
 ````

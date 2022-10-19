@@ -1,16 +1,10 @@
 ````javascript
 var sceneManager = SceneManager({
   carousel: false,
-  skipDelay: 200,
-  random: 'first-last',
-  ranges: [
-    [0, 0.35],
-    [0.35, 0.5],
-    [0.5, 0.7],
-    [0.7, 0.8],
-    [0.8, 0.9],
-    [0.9, 1],
-  ],
+  nav: true,
+  arrows: true,
+  navSelector: ".custom-nav",
+  arrowsSelector: ".custom-arrow",
   onAppear: function (el) {
     TweenMax.set(el, { x: "0%" });
   },
@@ -20,11 +14,11 @@ var sceneManager = SceneManager({
   onBeforeEnter: function (el, meta) {
     TweenMax.set(el, { x: meta.direction * 100 + "%" });
   },
-  onEnter: function (el, onComplete, meta) {
-    TweenMax.to(el, 1, { x: "0%", onComplete })
+  onEnter: function (el, done, meta) {
+    TweenMax.to(el, 1, { x: "0%", onComplete: done });
   },
-  onLeave: function (el, onComplete, meta) {
-    TweenMax.to(el, 1, { x: meta.direction * 100 + "%", onComplete })
+  onLeave: function (el, done, meta) {
+    TweenMax.to(el, 1, { x: meta.direction * 100 + "%", onComplete: done });
   },
 });
 
@@ -51,8 +45,58 @@ function receiveScrollData(data) {
     <div class="scene-manager-scene"></div>
     <div class="scene-manager-scene"></div>
  </div>
+
+  <div class="custom-nav"></div>
+  <button class="custom-arrow custom-arrow--prev">Prev</button>
+  <button class="custom-arrow custom-arrow--next">Next</button>
 </div>
 ```css
+
+.custom-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 3px;
+}
+
+.custom-nav__button {
+  background-color: aquamarine;
+  border-radius: 50%;
+  display: inline-block;
+  padding: 5px;
+  cursor: pointer;
+  margin: 3px 0;
+  border: none;
+  box-shadow: none;
+}
+
+.custom-nav__button--active {
+  background-color: blueviolet;
+}
+
+.custom-arrow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: none;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.custom-arrow--prev {
+  top: 0;
+}
+
+.custom-arrow--next {
+  bottom: 0;
+}
+
 .scene-manager-scene {
   counter-increment: counter;
   font-size: 40px;
