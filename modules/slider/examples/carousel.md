@@ -10,7 +10,7 @@ var sceneManager = SceneManager({
 });
 
 function receiveScrollData(data) {
-    TweenMax.set(".slider", {
+    TweenMax.set(".scene-manager", {
     height: data.window,
   });
 
@@ -20,10 +20,6 @@ function receiveScrollData(data) {
 
   var progress = data.scroll / (data.body - data.window);
   sceneManager.play(progress);
-}
-
-function animate() {
-  slider.init();
 }
 
 ```html

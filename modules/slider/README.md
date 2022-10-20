@@ -7,7 +7,7 @@
 - `carousel` - boolean, default is true.
 - `isReversed` - boolean, default is false. Create reversed carousel.
 
-- `skipDelay` - default is 200. Delay while user scrolls. Less deplay skips less slides.
+- `skipDelay` - default is 200. Delay while user scrolls. Less delay skips less slides.
 
 - `mode` - defailt is "in-out". Hiding and showing fire at the same time. 'out-in' - Showing fires after hiding has finished.
 
