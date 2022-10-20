@@ -218,7 +218,12 @@ export default function (options) {
   }, _options.skipDelay);
 
   function play(progress) {
-    progress = Numbers.clampProgress(progress);
+    if (progress < 0 || progress > 1) {
+      throw new Error(
+        "Check progress value. Should be between 0 and 1. Current value is: " +
+          progress
+      );
+    }
 
     const speed = Math.abs(progress - _currentProgress);
 
