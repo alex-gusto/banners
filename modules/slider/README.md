@@ -1,18 +1,24 @@
 ### Slider options
 
-- `carousel` - boolean, default is true.
-- `nav` - boolean, default is false. Activate navigation buttons.
-- `arrows` - boolean, default is false. Activate navigation arrows (prev/next).
-- `skipDelay` - default is 200. Delay while user scrolls. Less deplay skips less slides.
-- `isReversed` - boolean, default is false. Create reversed carousel.
-
 - `rootSelector`- string, default is ".scene-manager". Root slider class.
 - `holderSelector`- string, default is ".scene-manager-holder". Holder scenes class.
 - `sceneSelector`- string. default is ".scene-manager-scene". Class of every scene.
+
+- `carousel` - boolean, default is true.
+- `isReversed` - boolean, default is false. Create reversed carousel.
+
+- `skipDelay` - default is 200. Delay while user scrolls. Less deplay skips less slides.
+
+- `mode` - defailt is "in-out". Hiding and showing fire at the same time. 'out-in' - Showing fires after hiding has finished.
+
+- `nav` - boolean, default is false. Activate navigation buttons.
 - `navSelector` - Default is ".scene-manager-nav". Class for navigation holder buttons.
+
+- `arrows` - boolean, default is false. Activate navigation arrows (prev/next).
 - `arrowsSelector` - Default is ".scene-manager-arrow". Class for navigation arrows.
   Next arrow class: ".scene-manager-arrow--next".
   Prev arrow class: ".scene-manager-arrow--prev"
+
 - `ranges` - Array of arrays [[min, max]]. Custom ranges for appearing slides. Default step for range is (1 / slides count)
   ```
   [

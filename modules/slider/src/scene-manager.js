@@ -1,5 +1,5 @@
 import { initArrows, initNav } from "./core";
-import { DEFAULT_OPTIONS, RANDOM_OPTIONS } from "./literals";
+import { CHANGE_MODES, DEFAULT_OPTIONS, RANDOM_OPTIONS } from "./literals";
 import "./styles.css";
 import { createQueue, debounce, deepCopy, fpsLoop, Numbers } from "./utils";
 
@@ -100,29 +100,35 @@ export default function (options) {
   }
 
   function _hideSlide(index, meta) {
-    var slideEl = _getSlideEl(index);
+    return new Promise((resolve) => {
+      var slideEl = _getSlideEl(index);
 
-    _trigger("onBeforeLeave", slideEl, meta);
+      _trigger("onBeforeLeave", slideEl, meta);
 
-    var done = debounce(function () {
-      _trigger("onAfterLeave", slideEl, meta);
-      _states.isHiding = false;
-    }, 0);
+      var done = debounce(function () {
+        _trigger("onAfterLeave", slideEl, meta);
+        _states.isHiding = false;
+        resolve();
+      }, 0);
 
-    _states.isHiding = _trigger("onLeave", slideEl, done, meta);
+      _states.isHiding = _trigger("onLeave", slideEl, done, meta);
+    });
   }
 
   function _showSlide(index, meta) {
-    var slideEl = _getSlideEl(index);
+    return new Promise((resolve) => {
+      var slideEl = _getSlideEl(index);
 
-    _trigger("onBeforeEnter", slideEl, meta);
+      _trigger("onBeforeEnter", slideEl, meta);
 
-    var done = debounce(() => {
-      _trigger("onAfterEnter", slideEl, meta);
-      _states.isShowing = false;
-    }, 0);
+      var done = debounce(() => {
+        _trigger("onAfterEnter", slideEl, meta);
+        _states.isShowing = false;
+        resolve();
+      }, 0);
 
-    _states.isShowing = _trigger("onEnter", slideEl, done, meta);
+      _states.isShowing = _trigger("onEnter", slideEl, done, meta);
+    });
   }
 
   function _play(meta) {
@@ -144,8 +150,15 @@ export default function (options) {
           if (_options.nav) _nav.updateActiveNavButton(next);
 
           _play(meta);
-          _hideSlide(current, meta);
-          _showSlide(next, meta);
+
+          if (_options.mode === CHANGE_MODES.inOut) {
+            _hideSlide(current, meta);
+            _showSlide(next, meta);
+          }
+
+          if (_options.mode === CHANGE_MODES.outIn) {
+            _hideSlide(current, meta).then(() => _showSlide(next, meta));
+          }
         };
       })(currentIndex, nextIndex, meta)
     );

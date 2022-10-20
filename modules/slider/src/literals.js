@@ -1,3 +1,10 @@
+export const CHANGE_MODES = {
+  inOut: "in-out",
+  outIn: "out-in",
+};
+
+export const RANDOM_OPTIONS = ["first", "first-last", "last"];
+
 export const DEFAULT_OPTIONS = {
   rootSelector: ".scene-manager",
   holderSelector: ".scene-manager-holder",
@@ -10,6 +17,5 @@ export const DEFAULT_OPTIONS = {
   random: false,
   nav: false,
   arrows: false,
+  mode: CHANGE_MODES.inOut,
 };
-
-export const RANDOM_OPTIONS = ["first", "first-last", "last"];
