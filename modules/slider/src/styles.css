@@ -44,7 +44,13 @@
 .scene-manager-arrow--prev {
   left: 0;
 }
+.scene-manager-arrow--prev:before {
+  content: "<";
+}
 
 .scene-manager-arrow--next {
   right: 0;
+}
+.scene-manager-arrow--next:before {
+  content: ">";
 }

@@ -20,14 +20,12 @@ export function initArrows(rootEl, options) {
 
   if (!arrows.prev) {
     arrows.prev = createArrow(arrowClass, prevArrowClass);
-    arrows.prev.innerText = "<";
 
     rootEl.appendChild(arrows.prev);
   }
 
   if (!arrows.next) {
     arrows.next = createArrow(arrowClass, nextArrowClass);
-    arrows.next.innerText = ">";
 
     rootEl.appendChild(arrows.next);
   }
