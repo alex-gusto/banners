@@ -1,11 +1,30 @@
 ````javascript
 var sceneManager = SceneManager({
-  isReversed: true,
-  onPlay: function onPlay(meta) {
-    var holder = sceneManager.getHolder();
-    var root = sceneManager.getRoot();
-
-    TweenMax.to(holder.el, 1, { x: root.width * meta.nextIndex + "px" });
+  arrows: true,
+  onAppear: function (el) {
+    TweenMax.set(el, { x: "0%" });
+  },
+  onDisappear: function (el) {
+    TweenMax.set(el, {
+      x: "100%",
+    });
+  },
+  onBeforeEnter: function (el, meta) {
+    TweenMax.set(el, {
+      x: 100 * meta.direction * -1 + "%",
+    });
+  },
+  onEnter: function (el, done) {
+    TweenMax.to(el, 1, {
+      x: "0%",
+      onComplete: done,
+    });
+  },
+  onLeave: function (el, done, meta) {
+    TweenMax.to(el, 1, {
+      x: 100 * meta.direction + "%",
+      onComplete: done,
+    });
   },
 });
 

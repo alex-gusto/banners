@@ -4,9 +4,6 @@
 - `holderSelector`- string, default is ".scene-manager-holder". Holder scenes class.
 - `sceneSelector`- string. default is ".scene-manager-scene". Class of every scene.
 
-- `carousel` - boolean, default is true.
-- `isReversed` - boolean, default is false. Create reversed carousel.
-
 - `skipDelay` - default is 200. Delay while user scrolls. Less delay skips less slides.
 
 - `mode` - defailt is "in-out". Hiding and showing fire at the same time. 'out-in' - Showing fires after hiding has finished.
@@ -35,7 +32,11 @@
 
 ### Slider animation hooks
 
-`onBeforeEnter(el, meta)` - set up first slide position.
+`onAppear(el, meta)` - set up start visible slide styles.
+
+`onDisappear(el, meta)` - set up start hidden slide styles.
+
+`onBeforeEnter(el, meta)` - set up slide position.
 
 `onEnter(el, done, meta)` - enter animation, done - callback on animation is finished
 
@@ -52,8 +53,8 @@
 ### hooks argument `meta`
 
 - `currentIndex` - current slide index
-- `nextIndex` - next slide index
-- `direction` - scroll direction 1 - down, -1 up
+- `prevIndex` - prev slide index
+- `direction` - scroll direction 1 - down, -1 up. Available only when progress changes.
 - `speed` - fake scroll speed, need to re-think
 
 ### Methods

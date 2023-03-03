@@ -11,8 +11,6 @@ export const DEFAULT_OPTIONS = {
   sceneSelector: ".scene-manager-scene",
   navSelector: ".scene-manager-nav",
   arrowsSelector: ".scene-manager-arrow",
-  carousel: true,
-  isReversed: false,
   skipDelay: 200,
   random: false,
   nav: false,

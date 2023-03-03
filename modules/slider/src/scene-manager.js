@@ -1,7 +1,7 @@
 import { initArrows, initNav } from "./core";
 import { CHANGE_MODES, DEFAULT_OPTIONS, RANDOM_OPTIONS } from "./literals";
 import "./styles.css";
-import { createQueue, debounce, deepCopy, fpsLoop, Numbers } from "./utils";
+import { Numbers, createQueue, debounce, deepCopy, fpsLoop } from "./utils";
 
 function parseRandom(random, lastSlideIndex) {
   if (!random) return false;
@@ -132,15 +132,11 @@ export default function (options) {
   }
 
   function _play(meta) {
-    const isFired = _trigger("onPlay", meta);
-
-    if (!isFired && _options.carousel) {
-      throw new Error("Provide onPlay hook for carousel move!");
-    }
+    _trigger("onPlay", meta);
   }
 
   const _addToQueue = (meta) => {
-    const { nextIndex, currentIndex, realIndex } = meta;
+    const { currentIndex, prevIndex, realIndex } = meta;
 
     if (realIndex >= _slidesCount || realIndex === _realProgressIndex) return;
 
@@ -160,10 +156,10 @@ export default function (options) {
             _hideSlide(current, meta).then(() => _showSlide(next, meta));
           }
         };
-      })(currentIndex, nextIndex, meta)
+      })(prevIndex, currentIndex, meta)
     );
 
-    _currentSlideIndex = nextIndex;
+    _currentSlideIndex = currentIndex;
     _realProgressIndex = realIndex;
   };
 
@@ -204,9 +200,9 @@ export default function (options) {
     );
 
     return {
-      nextIndex: randomIndex !== undefined ? randomIndex : realIndex,
+      currentIndex: randomIndex !== undefined ? randomIndex : realIndex,
       realIndex,
-      currentIndex: _currentSlideIndex,
+      prevIndex: _currentSlideIndex,
       progress: _currentProgress,
       speed,
       direction: _direction,
@@ -236,20 +232,12 @@ export default function (options) {
   function _initSlides() {
     _slideEls.forEach(function (slide, i) {
       var meta = {
-        nextIndex: i,
-        currentIndex: _currentSlideIndex,
+        currentIndex: i,
+        prevIndex: _currentSlideIndex,
       };
 
       slide.style.width = _root.width + "px";
       slide.style.height = _root.height + "px";
-
-      if (_options.carousel) {
-        if (_options.isReversed) {
-          slide.style.right = _root.width * i + "px";
-        } else {
-          slide.style.left = _root.width * i + "px";
-        }
-      }
 
       if (_currentSlideIndex === i) {
         _trigger("onAppear", slide, meta);
@@ -264,17 +252,6 @@ export default function (options) {
 
     _root.width = parseFloat(styles.width);
     _root.height = parseFloat(styles.height);
-
-    if (_options.carousel) {
-      _holder.width = parseFloat(_root.width) * _slidesCount;
-      _holder.el.style.width = _holder.width + "px";
-
-      if (_options.isReversed) {
-        _holder.el.style.right = 0;
-      } else {
-        _holder.el.style.left = 0;
-      }
-    }
   }
 
   function _initSlideRanges(progressStep, slidesCount) {
@@ -311,12 +288,16 @@ export default function (options) {
   function nextScene() {
     let index = _realProgressIndex + 1;
     index = index >= _slidesCount ? 0 : index;
+    _direction = 1;
+
     _addToQueue(_createNextSlideMeta(0, index));
   }
 
   function prevScene() {
     let index = _realProgressIndex - 1;
     index = index < 0 ? _slidesCount - 1 : index;
+    _direction = -1;
+
     _addToQueue(_createNextSlideMeta(0, index));
   }
 
