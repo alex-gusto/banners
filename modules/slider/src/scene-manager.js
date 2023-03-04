@@ -348,7 +348,7 @@ export default function (options) {
 
     _onResize();
 
-    window.addEventListener("resize", _onResize);
+    window.addEventListener("resize", debounce(_onResize, 400));
 
     fpsLoop(function () {
       if (slidesQueue.isEmpty() || _states.isShowing || _states.isHiding)
