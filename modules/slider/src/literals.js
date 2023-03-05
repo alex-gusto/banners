@@ -11,7 +11,7 @@ export const DEFAULT_OPTIONS = {
   sceneSelector: ".scene-manager-scene",
   navSelector: ".scene-manager-nav",
   arrowsSelector: ".scene-manager-arrow",
-  skipDelay: 200,
+  skipDelay: 250,
   random: false,
   nav: false,
   arrows: false,

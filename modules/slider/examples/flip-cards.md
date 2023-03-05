@@ -7,7 +7,6 @@ function initSlide(el, opacity, index) {
 }
 
 var sceneManager = SceneManager({
-  carousel: false,
   onAppear: function (el, meta) {
     initSlide(el, 1, meta.nextIndex);
   },

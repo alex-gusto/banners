@@ -82,7 +82,7 @@ export default function (options) {
   var _currentProgress = 0;
   var _progressStep;
   var _direction = 1;
-  const _ranges = [];
+  let _ranges;
 
   var slidesQueue = createQueue();
 
@@ -163,23 +163,39 @@ export default function (options) {
     _realProgressIndex = realIndex;
   };
 
-  function _getNextSlideIndex(progress, nextIndex) {
+  function _getNextSlideIndex() {
+    const index = _realProgressIndex + 1;
+    return index >= _slidesCount ? 0 : index;
+  }
+
+  function _getPrevSlideIndex() {
+    const index = _realProgressIndex - 1;
+    return index < 0 ? _slidesCount - 1 : index;
+  }
+
+  function _getNewSlideIndex(progress, nextIndex) {
     if (nextIndex !== undefined) {
       return {
         realIndex: nextIndex,
       };
     }
 
-    const realIndex = _ranges.findIndex(([min, max]) => {
-      if (max === 1 && progress === 1) return true;
+    function getRealIndex() {
+      if (_ranges) {
+        return _ranges.findIndex(([min, max]) => {
+          if (max === 1 && progress === 1) return true;
 
-      return progress >= min && progress < max;
-    });
+          return progress >= min && progress < max;
+        });
+      }
 
-    function getRandomIndex() {
+      return _direction > 0 ? _getNextSlideIndex() : _getPrevSlideIndex();
+    }
+
+    function getRandomIndex(_realIndex) {
       const { random } = _options;
 
-      if (!random || random.includes(realIndex)) return;
+      if (!random || random.includes(_realIndex)) return;
 
       return getRandomSlideIndex(
         [_currentSlideIndex].concat(random),
@@ -187,14 +203,16 @@ export default function (options) {
       );
     }
 
+    const realIndex = getRealIndex();
+
     return {
       realIndex,
-      randomIndex: getRandomIndex(),
+      randomIndex: getRandomIndex(realIndex),
     };
   }
 
-  const _createNextSlideMeta = (speed = 0, nextIndex) => {
-    const { realIndex, randomIndex } = _getNextSlideIndex(
+  const _createSlideMeta = (speed = 0, nextIndex) => {
+    const { realIndex, randomIndex } = _getNewSlideIndex(
       _currentProgress,
       nextIndex
     );
@@ -210,7 +228,7 @@ export default function (options) {
   };
 
   const _runSlideChange = debounce((speed) => {
-    _addToQueue(_createNextSlideMeta(speed));
+    _addToQueue(_createSlideMeta(speed));
   }, _options.skipDelay);
 
   function play(progress) {
@@ -262,18 +280,22 @@ export default function (options) {
         );
       }
 
-      _ranges.push(..._options.ranges);
+      _ranges = _options.ranges;
       return;
     }
 
-    let i = 0;
+    // Setup default slides' ranges
+    if (_options.ranges === undefined) {
+      _ranges = [];
+      let i = 0;
 
-    while (i < slidesCount) {
-      const min = Numbers.floatStrip(i * progressStep);
-      const max = Numbers.floatStrip(i * progressStep + progressStep);
+      while (i < slidesCount) {
+        const min = Numbers.floatStrip(i * progressStep);
+        const max = Numbers.floatStrip(i * progressStep + progressStep);
 
-      _ranges.push([min, max]);
-      i++;
+        _ranges.push([min, max]);
+        i++;
+      }
     }
   }
 
@@ -282,23 +304,19 @@ export default function (options) {
       throw new Error(`Slide index: ${index} is not in slides range!`);
     }
 
-    _addToQueue(_createNextSlideMeta(0, index));
+    _addToQueue(_createSlideMeta(0, index));
   }
 
   function nextScene() {
-    let index = _realProgressIndex + 1;
-    index = index >= _slidesCount ? 0 : index;
     _direction = 1;
 
-    _addToQueue(_createNextSlideMeta(0, index));
+    _addToQueue(_createSlideMeta(0, _getNextSlideIndex()));
   }
 
   function prevScene() {
-    let index = _realProgressIndex - 1;
-    index = index < 0 ? _slidesCount - 1 : index;
     _direction = -1;
 
-    _addToQueue(_createNextSlideMeta(0, index));
+    _addToQueue(_createSlideMeta(0, _getPrevSlideIndex()));
   }
 
   function _onResize() {
@@ -328,7 +346,6 @@ export default function (options) {
         slidesCount: _slidesCount,
         currentSlideIndex: _currentSlideIndex,
         onButtonClick(index) {
-          console.log({ index });
           toScene(index);
         },
       });

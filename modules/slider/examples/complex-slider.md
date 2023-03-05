@@ -1,39 +1,33 @@
 ````javascript
 var sceneManager = SceneManager({
   onAppear: function onAppear(el, meta) {
-    TweenMax.set(el, { scale: 1 });
+    TweenMax.set(el, { scale: 1, x: "0%" });
   },
   onDisappear: function onDisappear(el) {
-    TweenMax.set(el, { scale: 0.7, opacity: 0 });
+    TweenMax.set(el, { scale: 0.7, x: "100%", opacity: 0 });
+  },
+  onBeforeEnter: function (el, meta) {
+    TweenMax.set(el, {
+      x: 100 * meta.direction * -1 + "%",
+    });
   },
   onEnter: function onEnter(el, onComplete, meta) {
-    var timeScale = 1 + meta.speed;
-
     TweenMax.to(el, 1, {
       scale: 1,
       opacity: 1,
-      x: 0,
+      x: "0%",
       zIndex: 2,
       onComplete: onComplete,
-    }).timeScale(timeScale);
+    });
   },
   onLeave: function onLeave(el, onComplete, meta) {
-    var timeScale = 1 + meta.speed;
-    var dir = meta.direction
-
     TweenMax.to(el, 1, {
       scale: 0.7,
-      x: dir * -30 + "px",
+      x: 100 * meta.direction + "%",
       opacity: 0,
       zIndex: 1,
       onComplete: onComplete,
-    }).timeScale(timeScale);
-  },
-  onPlay: function onPlay(meta) {
-    var holder = sceneManager.getHolder();
-    var root = sceneManager.getRoot();
-
-    TweenMax.to(holder.el, 1, { x: -root.width * meta.nextIndex + "px" });
+    });
   },
 });
 

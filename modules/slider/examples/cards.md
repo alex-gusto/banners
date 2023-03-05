@@ -1,6 +1,5 @@
 ````javascript
 var sceneManager = SceneManager({
-  carousel: false,
   skipDelay: 200,
   random: 'first-last',
   ranges: [
