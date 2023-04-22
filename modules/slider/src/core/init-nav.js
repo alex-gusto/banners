@@ -7,7 +7,7 @@ export function initNav(rootEl, options) {
   const buttons = [];
 
   const nav = {
-    el: rootEl.querySelector(navSelector),
+    el: document.querySelector(navSelector),
     buttons,
     updateActiveNavButton: (index) => {
       buttons.forEach((b) => b.classList.remove(navButtonActiveClass));

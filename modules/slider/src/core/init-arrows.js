@@ -14,8 +14,8 @@ export function initArrows(rootEl, options) {
   const nextArrowClass = `${arrowClass}--next`;
 
   const arrows = {
-    prev: rootEl.querySelector(`.${prevArrowClass}`),
-    next: rootEl.querySelector(`.${nextArrowClass}`),
+    prev: document.querySelector(`.${prevArrowClass}`),
+    next: document.querySelector(`.${nextArrowClass}`),
   };
 
   if (!arrows.prev) {
