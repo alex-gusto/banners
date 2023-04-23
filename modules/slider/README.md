@@ -1,6 +1,7 @@
 ### Slider options
 
-- `rootEl`- string or element, default is ".scene-manager". Root slider class.
+- `rootEl` - string or element, default is ".scene-manager". Root slider class.
+- `height` - string. Root element height. Default value is 100%.
 
 - `skipDelay` - default is 200. Delay while user scrolls. Less delay skips less slides.
 
@@ -8,14 +9,12 @@
 
 - `nav` - boolean, default is false. Activate navigation buttons.
 - `navEl` - string or element. The default is ".scene-manager-nav". Class for navigation holder buttons. **Searching goes inside the root for the selector. Use element to keep navigation outside root**.
-Navigation buttons are created automatically. To exclude slides from navigation, add the `data-no-nav` attribute to the slide element.
+  Navigation buttons are created automatically. To exclude slides from navigation, add the `data-no-nav` attribute to the slide element.
 
 - `arrows` - boolean, default is false. Activate navigation arrows (prev/next).
-- `arrowsSelector` - Default is ".scene-manager-arrow". Class for navigation arrows.
-  Next arrow class: ".scene-manager-arrow--next".
-  Prev arrow class: ".scene-manager-arrow--prev"
+- `prevArrowEl` and `nextArrowEl` - string or element. Default is ".scene-manager-arrow--prev" and ".scene-manager-arrow--next". Class for navigation arrows. **Searching goes inside the root for the selector. Use element to keep navigation outside root**.
 
-- `ranges` - Array of arrays [[min, max]]. Custom ranges for appearing slides. Default step for range is (1 / slides count)
+- `ranges` - Boolean or Array of arrays [[min, max]]. Custom ranges for appearing slides. Default step for range is (1 / slides count)
   ```
   [
     [0, 0.25],
@@ -24,6 +23,8 @@ Navigation buttons are created automatically. To exclude slides from navigation,
     [0.75, 1]
   ]
   ```
+  If ranges is disabled all slides will appear in scroll sequence.
+  
 - `random`- boolean, string, array. Default is false.
   - `true` every slide appears randomly
   - `first`, `last`, `first-last` - every slide appears randomly except first, last or first and last.
@@ -67,8 +68,6 @@ Navigation buttons are created automatically. To exclude slides from navigation,
 `getSlideEl(index)`
 
 `getRoot()` - returns root el, height, width
-
-`getHolder()` - returns holder el, height, width
 
 `direction()` - return current scroll direction
 

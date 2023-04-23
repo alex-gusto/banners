@@ -1,6 +1,6 @@
+import { CONTAINER_WIDTH, FRAMES, SCROLL_HEIGHT } from "./core/constants";
 import "./core/styles.css";
 import createEl from "./core/utils/create-element";
-import { FRAMES, CONTAINER_WIDTH, SCROLL_HEIGHT } from "./core/constants";
 
 const frames = FRAMES.map((frame) => ({
   id: frame,
@@ -42,7 +42,7 @@ const setupContainers = () => {
 
   const containers = document.querySelectorAll("[data-container]");
   containers.forEach(
-    (el) => (el.style.maxWidth = `${params.get("width") || CONTAINER_WIDTH}px`)
+    (el) => (el.style.maxWidth = `${params.get("width") || CONTAINER_WIDTH}px`),
   );
 };
 
@@ -50,7 +50,7 @@ const setupSides = () => {
   const params = getParams();
   const sides = document.querySelector("[data-sides]");
   sides.classList.add(
-    params.has("fixed") ? "frame-sides--fixed" : "frame-sides--absolute"
+    params.has("fixed") ? "frame-sides--fixed" : "frame-sides--absolute",
   );
 };
 
@@ -73,7 +73,7 @@ const initApp = async () => {
 
   const frameWins = await Promise.all(frameEls);
 
-  window.addEventListener("scroll", () => {
+  function onScroll() {
     frameWins.forEach((win) => {
       if (typeof win.receiveScrollData !== "function") return;
 
@@ -83,7 +83,11 @@ const initApp = async () => {
         window: window.innerHeight,
       });
     });
-  });
+  }
+
+  onScroll();
+
+  window.addEventListener("scroll", onScroll);
 };
 
 initApp();

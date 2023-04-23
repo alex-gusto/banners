@@ -35,7 +35,8 @@
   background-color: blueviolet;
 }
 
-.scene-manager-arrow {
+.scene-manager-arrow--prev,
+.scene-manager-arrow--next {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);

@@ -19,7 +19,6 @@ const createButtons = ({
     }
 
     const el = document.createElement("BUTTON");
-    el.innerText = i;
     el.classList.add(navButtonClass);
     el.dataset.index = i;
 

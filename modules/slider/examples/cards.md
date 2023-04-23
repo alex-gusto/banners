@@ -27,16 +27,11 @@ var sceneManager = SceneManager({
   },
 });
 
-function receiveScrollData(data) {
-  TweenMax.set(".scene-manager", {
-    height: data.window,
-  });
+// Activate when DOM is ready
+sceneManager.init();
 
-  if(!sceneManager.isInited()) {
-    sceneManager.init();
-  }
-
-  var progress = data.scroll / (data.body - data.window);
+function onScroll() {
+  var progress = window.pageYOffset / (document.body.clientHeight - window.innerHeight);
   sceneManager.play(progress);
 }
 
