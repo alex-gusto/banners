@@ -286,6 +286,8 @@ export default function (options) {
       throw new Error("No slider found! Check: " + _options.rootEl);
     }
 
+    _root.el.style.height = _options.height;
+
     _holder.el = Dom.findEl(_options.holderEl, _root.el);
     _slideEls = [...Dom.findEls(_options.sceneSelector, _root.el)];
     _slidesCount = _slideEls.length;
@@ -308,7 +310,8 @@ export default function (options) {
 
     if (_options.arrows) {
       initArrows(_root.el, {
-        arrowsSelector: _options.arrowsSelector,
+        prevArrowEl: _options.prevArrowEl,
+        nextArrowEl: _options.nextArrowEl,
         onPrevClick: prevScene,
         onNextClick: nextScene,
       });
@@ -345,10 +348,6 @@ export default function (options) {
 
     isInited() {
       return _states.isInit;
-    },
-
-    getHolder: function () {
-      return _holder;
     },
 
     getCurrentSlideIndex: function () {

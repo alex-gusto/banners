@@ -1,33 +1,28 @@
 import { Dom } from "../utils";
 
-const createArrow = (arrowClass, className) => {
+const createArrow = (className) => {
   const el = document.createElement("BUTTON");
-  el.classList.add(arrowClass);
   el.classList.add(className);
 
   return el;
 };
 
 export function initArrows(rootEl, options) {
-  const { arrowsSelector, onPrevClick, onNextClick } = options;
-
-  const arrowClass = arrowsSelector.replace(".", "");
-  const prevArrowClass = `${arrowClass}--prev`;
-  const nextArrowClass = `${arrowClass}--next`;
+  const { prevArrowEl, nextArrowEl, onPrevClick, onNextClick } = options;
 
   const arrows = {
-    prev: Dom.findEl(`.${prevArrowClass}`, rootEl),
-    next: Dom.findEl(`.${nextArrowClass}`, rootEl),
+    prev: Dom.findEl(prevArrowEl, rootEl),
+    next: Dom.findEl(nextArrowEl, rootEl),
   };
 
   if (!arrows.prev) {
-    arrows.prev = createArrow(arrowClass, prevArrowClass);
+    arrows.prev = createArrow(prevArrowEl.replace(".", ""));
 
     rootEl.appendChild(arrows.prev);
   }
 
   if (!arrows.next) {
-    arrows.next = createArrow(arrowClass, nextArrowClass);
+    arrows.next = createArrow(nextArrowEl.replace(".", ""));
 
     rootEl.appendChild(arrows.next);
   }
