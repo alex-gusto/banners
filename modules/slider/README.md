@@ -7,7 +7,8 @@
 - `mode` - defailt is "in-out". Hiding and showing fire at the same time. 'out-in' - Showing fires after hiding has finished.
 
 - `nav` - boolean, default is false. Activate navigation buttons.
-- `navEl` - string or element. Default is ".scene-manager-nav". Class for navigation holder buttons. **Searching is going inside RootEl for selector. Use element to keep navigation ouside root**. 
+- `navEl` - string or element. The default is ".scene-manager-nav". Class for navigation holder buttons. **Searching goes inside the root for the selector. Use element to keep navigation outside root**.
+Navigation buttons are created automatically. To exclude slides from navigation, add the `data-no-nav` attribute to the slide element.
 
 - `arrows` - boolean, default is false. Activate navigation arrows (prev/next).
 - `arrowsSelector` - Default is ".scene-manager-arrow". Class for navigation arrows.
