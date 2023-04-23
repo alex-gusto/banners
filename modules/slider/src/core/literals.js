@@ -6,10 +6,10 @@ export const CHANGE_MODES = {
 export const RANDOM_OPTIONS = ["first", "first-last", "last"];
 
 export const DEFAULT_OPTIONS = {
-  rootSelector: ".scene-manager",
-  holderSelector: ".scene-manager-holder",
+  rootEl: ".scene-manager",
+  holderEl: ".scene-manager-holder",
   sceneSelector: ".scene-manager-scene",
-  navSelector: ".scene-manager-nav",
+  navEl: ".scene-manager-nav",
   arrowsSelector: ".scene-manager-arrow",
   skipDelay: 250,
   random: false,
