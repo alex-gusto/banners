@@ -1,3 +1,5 @@
+import { Dom } from "../utils";
+
 const createArrow = (arrowClass, className) => {
   const el = document.createElement("BUTTON");
   el.classList.add(arrowClass);
@@ -14,8 +16,8 @@ export function initArrows(rootEl, options) {
   const nextArrowClass = `${arrowClass}--next`;
 
   const arrows = {
-    prev: document.querySelector(`.${prevArrowClass}`),
-    next: document.querySelector(`.${nextArrowClass}`),
+    prev: Dom.findEl(`.${prevArrowClass}`, rootEl),
+    next: Dom.findEl(`.${nextArrowClass}`, rootEl),
   };
 
   if (!arrows.prev) {

@@ -1,59 +1,13 @@
-import { initArrows, initNav } from "./core";
-import { CHANGE_MODES, DEFAULT_OPTIONS, RANDOM_OPTIONS } from "./literals";
+import {
+  getRandomSlideIndex,
+  initArrows,
+  initNav,
+  parseRandom,
+  setupOptions,
+} from "./core";
+import { CHANGE_MODES } from "./core/literals";
 import "./styles.css";
-import { Numbers, createQueue, debounce, deepCopy, fpsLoop } from "./utils";
-
-function parseRandom(random, lastSlideIndex) {
-  if (!random) return false;
-
-  if (typeof random === "boolean") return [];
-
-  if (typeof random === "string") {
-    if (!RANDOM_OPTIONS.includes(random)) {
-      throw new Error(
-        `Check random option. Just boolean, array of numbers, ${RANDOM_OPTIONS.join(
-          ", "
-        )} are available!`
-      );
-    }
-
-    switch (random) {
-      case "first":
-        return [0];
-      case "last":
-        return [lastSlideIndex];
-      case "first-last":
-        return [0, lastSlideIndex];
-    }
-  }
-
-  return random;
-}
-
-function setupOptions(options) {
-  if (!options) {
-    return DEFAULT_OPTIONS;
-  }
-
-  var opts = deepCopy(DEFAULT_OPTIONS);
-  for (var key in options) {
-    if (options.hasOwnProperty(key)) {
-      opts[key] = options[key];
-    }
-  }
-
-  return opts;
-}
-
-function getRandomSlideIndex(excludedIndexes, slidesCount) {
-  const n = Math.floor(Math.random() * slidesCount);
-
-  if (excludedIndexes.includes(n)) {
-    return getRandomSlideIndex(excludedIndexes, slidesCount);
-  }
-
-  return n;
-}
+import { Dom, Numbers, createQueue, debounce, fpsLoop } from "./utils";
 
 export default function (options) {
   var _options = setupOptions(options);
@@ -156,7 +110,7 @@ export default function (options) {
             _hideSlide(current, meta).then(() => _showSlide(next, meta));
           }
         };
-      })(prevIndex, currentIndex, meta)
+      })(prevIndex, currentIndex, meta),
     );
 
     _currentSlideIndex = currentIndex;
@@ -199,7 +153,7 @@ export default function (options) {
 
       return getRandomSlideIndex(
         [_currentSlideIndex].concat(random),
-        _slidesCount
+        _slidesCount,
       );
     }
 
@@ -214,7 +168,7 @@ export default function (options) {
   const _createSlideMeta = (speed = 0, nextIndex) => {
     const { realIndex, randomIndex } = _getNewSlideIndex(
       _currentProgress,
-      nextIndex
+      nextIndex,
     );
 
     return {
@@ -235,7 +189,7 @@ export default function (options) {
     if (progress < 0 || progress > 1) {
       throw new Error(
         "Check progress value. Should be between 0 and 1. Current value is: " +
-          progress
+          progress,
       );
     }
 
@@ -276,7 +230,7 @@ export default function (options) {
     if (_options.ranges) {
       if (slidesCount !== _options.ranges.length) {
         throw new Error(
-          `The count of ranges should be the same as count of slides! Ranges count: ${_options.ranges.length}, slides count: ${slidesCount}`
+          `The count of ranges should be the same as count of slides! Ranges count: ${_options.ranges.length}, slides count: ${slidesCount}`,
         );
       }
 
@@ -327,13 +281,13 @@ export default function (options) {
   function init() {
     if (_states.isInit) return;
 
-    _root.el = document.querySelector(_options.rootSelector);
+    _root.el = Dom.findEl(_options.rootEl);
     if (!_root.el) {
-      throw new Error("No slider found! Check: " + _options.rootSelector);
+      throw new Error("No slider found! Check: " + _options.rootEl);
     }
 
-    _holder.el = _root.el.querySelector(_options.holderSelector);
-    _slideEls = [..._root.el.querySelectorAll(_options.sceneSelector)];
+    _holder.el = Dom.findEl(_options.holderEl, _root.el);
+    _slideEls = [...Dom.findEls(_options.sceneSelector, _root.el)];
     _slidesCount = _slideEls.length;
 
     if (!_slidesCount) {
@@ -342,8 +296,9 @@ export default function (options) {
 
     if (_options.nav) {
       _nav = initNav(_root.el, {
-        navSelector: _options.navSelector,
+        navEl: _options.navEl,
         slidesCount: _slidesCount,
+        slideEls: _slideEls,
         currentSlideIndex: _currentSlideIndex,
         onButtonClick(index) {
           toScene(index);

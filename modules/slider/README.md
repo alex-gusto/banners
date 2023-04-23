@@ -1,15 +1,13 @@
 ### Slider options
 
-- `rootSelector`- string, default is ".scene-manager". Root slider class.
-- `holderSelector`- string, default is ".scene-manager-holder". Holder scenes class.
-- `sceneSelector`- string. default is ".scene-manager-scene". Class of every scene.
+- `rootEl`- string or element, default is ".scene-manager". Root slider class.
 
 - `skipDelay` - default is 200. Delay while user scrolls. Less delay skips less slides.
 
 - `mode` - defailt is "in-out". Hiding and showing fire at the same time. 'out-in' - Showing fires after hiding has finished.
 
 - `nav` - boolean, default is false. Activate navigation buttons.
-- `navSelector` - Default is ".scene-manager-nav". Class for navigation holder buttons.
+- `navEl` - string or element. Default is ".scene-manager-nav". Class for navigation holder buttons. **Searching is going inside RootEl for selector. Use element to keep navigation ouside root**. 
 
 - `arrows` - boolean, default is false. Activate navigation arrows (prev/next).
 - `arrowsSelector` - Default is ".scene-manager-arrow". Class for navigation arrows.
