@@ -2,6 +2,7 @@ const isEl = (el) => el instanceof HTMLElement;
 const isString = (str) => typeof str === "string";
 
 export const Dom = {
+  isEl,
   findEl(strOrEl, parent = document) {
     if (isString(strOrEl)) {
       return parent.querySelector(strOrEl);

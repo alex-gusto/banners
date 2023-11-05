@@ -1,5 +1,6 @@
 ### Slider options
 
+- `scenes` - array of elements. If it is set, rootEl is optional and equals document.body by default. 
 - `rootEl` - string or element, default is ".scene-manager". Root slider class.
 - `height` - string. Root element height. Default value is 100%.
 
@@ -29,6 +30,7 @@
   - `true` every slide appears randomly
   - `first`, `last`, `first-last` - every slide appears randomly except first, last or first and last.
   - [indexes] - every slide appears randomly except provided indexes.
+
 
 ### Slider animation hooks
 

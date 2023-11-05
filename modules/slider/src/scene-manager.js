@@ -21,11 +21,6 @@ export default function (options) {
     width: 0,
     height: 0,
   };
-  var _holder = {
-    el: null,
-    width: 0,
-    height: 0,
-  };
 
   var _nav;
 
@@ -208,22 +203,12 @@ export default function (options) {
         prevIndex: _currentSlideIndex,
       };
 
-      slide.style.width = _root.width + "px";
-      slide.style.height = _root.height + "px";
-
       if (_currentSlideIndex === i) {
         _trigger("onAppear", slide, meta);
       } else {
         _trigger("onDisappear", slide, meta);
       }
     });
-  }
-
-  function _initSliderSize() {
-    var styles = getComputedStyle(_root.el);
-
-    _root.width = parseFloat(styles.width);
-    _root.height = parseFloat(styles.height);
   }
 
   function _initSlideRanges(progressStep, slidesCount) {
@@ -274,22 +259,31 @@ export default function (options) {
   }
 
   function _onResize() {
-    _initSliderSize();
     _initSlides();
   }
 
   function init() {
     if (_states.isInit) return;
-
+   
     _root.el = Dom.findEl(_options.rootEl);
-    if (!_root.el) {
-      throw new Error("No slider found! Check: " + _options.rootEl);
+
+    if(_options.scenes && _options.scenes.length) {
+      if(!_options.scenes.every(Dom.isEl)) {
+        console.log('scenes: ', _options.scenes);
+        throw new Error("Not all scenes are elements!");
+      }
+
+       _root.el ??= document.body;
+       _slideEls = [..._options.scenes]
+    } else {
+      if (!_root.el) {
+        throw new Error("No slider found! Check: " + _options.rootEl);
+      }
+      
+     _root.el.style.height = _options.height;
+     _slideEls = [...Dom.findEls(_options.sceneSelector, _root.el)];
     }
 
-    _root.el.style.height = _options.height;
-
-    _holder.el = Dom.findEl(_options.holderEl, _root.el);
-    _slideEls = [...Dom.findEls(_options.sceneSelector, _root.el)];
     _slidesCount = _slideEls.length;
 
     if (!_slidesCount) {
