@@ -52,6 +52,8 @@
 
 `onPlay(meta)` - fires for every slide change
 
+`onScroll(meta)` - fires on scroll
+
 ### hooks argument `meta`
 
 - `currentIndex` - current slide index

@@ -173,6 +173,7 @@ export default function (options) {
       progress: _currentProgress,
       speed,
       direction: _direction,
+      scenes: _slideEls
     };
   };
 
@@ -182,7 +183,7 @@ export default function (options) {
 
   function play(progress) {
     if (progress < 0 || progress > 1) {
-      throw new Error(
+      console.error(
         "Check progress value. Should be between 0 and 1. Current value is: " +
           progress,
       );
@@ -191,6 +192,9 @@ export default function (options) {
     const speed = Math.abs(progress - _currentProgress);
 
     _direction = _currentProgress > progress ? -1 : 1;
+
+    _trigger("onScroll", _createSlideMeta(speed))
+
     _currentProgress = progress;
 
     _runSlideChange(speed);
@@ -279,7 +283,7 @@ export default function (options) {
       if (!_root.el) {
         throw new Error("No slider found! Check: " + _options.rootEl);
       }
-      
+
      _root.el.style.height = _options.height;
      _slideEls = [...Dom.findEls(_options.sceneSelector, _root.el)];
     }
