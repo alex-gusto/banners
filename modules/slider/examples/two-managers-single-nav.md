@@ -94,25 +94,21 @@ function onScroll() {
 
 ```html
 <div class="scene-manager" id="top">
-  <div class="scene-manager-holder">
-      <div class="scene-manager-scene"></div>
-      <div class="scene-manager-scene"></div>
-      <div class="scene-manager-scene"></div>
-      <div class="scene-manager-scene"></div>
-      <div class="scene-manager-scene"></div>
-      <div class="scene-manager-scene"></div>
-  </div>
+  <div class="scene-manager-scene"></div>
+  <div class="scene-manager-scene"></div>
+  <div class="scene-manager-scene"></div>
+  <div class="scene-manager-scene"></div>
+  <div class="scene-manager-scene"></div>
+  <div class="scene-manager-scene"></div>
  </div>
 
  <div class="scene-manager" id="bottom">
-  <div class="scene-manager-holder">
-      <div class="scene-manager-scene"></div>
-      <div class="scene-manager-scene"></div>
-      <div class="scene-manager-scene"></div>
-      <div class="scene-manager-scene"></div>
-      <div class="scene-manager-scene"></div>
-      <div class="scene-manager-scene"></div>
-  </div>
+  <div class="scene-manager-scene"></div>
+  <div class="scene-manager-scene"></div>
+  <div class="scene-manager-scene"></div>
+  <div class="scene-manager-scene"></div>
+  <div class="scene-manager-scene"></div>
+  <div class="scene-manager-scene"></div>
  </div>
 
   <button class="custom-arrow--prev">Prev</button>

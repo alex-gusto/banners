@@ -41,14 +41,12 @@ function onScroll() {
 
 ```html
 <div class="scene-manager">
- <div class="scene-manager-holder">
-    <div class="scene-manager-scene"></div>
-    <div class="scene-manager-scene"></div>
-    <div class="scene-manager-scene"></div>
-    <div class="scene-manager-scene"></div>
-    <div class="scene-manager-scene"></div>
-    <div class="scene-manager-scene"></div>
- </div>
+  <div class="scene-manager-scene"></div>
+  <div class="scene-manager-scene"></div>
+  <div class="scene-manager-scene"></div>
+  <div class="scene-manager-scene"></div>
+  <div class="scene-manager-scene"></div>
+  <div class="scene-manager-scene"></div>
 </div>
 
 ```css
